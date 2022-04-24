@@ -1,8 +1,8 @@
 # Project: Projekt1
 # Makefile created by Dev-C++ 5.11
 
-CPP      = g++.exe
-CC       = gcc.exe
+CPP      = g++
+CC       = gcc
 WINDRES  = windres.exe
 OBJ      = Hylleraas.o
 LINKOBJ  = Hylleraas.o
