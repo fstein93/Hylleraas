@@ -5,24 +5,33 @@ CPP      = g++
 CC       = gcc
 WINDRES  = windres.exe
 OBJ      = Hylleraas.o
-LINKOBJ  = Hylleraas.o
-LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -pg
-INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
-CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+OBJ_DEBUG = Hylleraas.o_debug
+LIBS     = 
+INCS     = 
+CXXINCS  = 
 BIN      = Hylleraas.exe
-CXXFLAGS = $(CXXINCS) -march=native -Og -std=gnu++11 -Wall -Wextra -pedantic -pg
-CFLAGS   = $(INCS) -march=native -Og -std=gnu++11 -Wall -Wextra -pedantic -pg
-RM       = rm.exe -f
+BIN_DEBUG = Hylleraas_debug.exe
+CXXFLAGS = $(CXXINCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
+CFLAGS   = $(INCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
+DEBUGFLAGS = -pg -Og
+RELEASEFLAGS = -O2
+RM       = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before $(BIN) all-after
+all: all-before $(BIN) $(BIN_DEBUG) all-after
 
 clean: clean-custom
-	${RM} $(OBJ) $(BIN)
+	${RM} $(OBJ) $(OBJ_DEBUG) $(BIN) $(BIN_DEBUG)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+	$(CPP) $(OBJ) -o $(BIN) $(LIBS)
+
+$(BIN_DEBUG): $(OBJ_DEBUG)
+	$(CPP) $(OBJ_DEBUG) -o $(BIN_DEBUG) $(LIBS)
 
 Hylleraas.o: Hylleraas.cpp
-	$(CPP) -c Hylleraas.cpp -o Hylleraas.o $(CXXFLAGS)
+	$(CPP) -c Hylleraas.cpp -o Hylleraas.o $(CXXFLAGS) $(RELEASEFLAGS)
+
+Hylleraas.o_debug: Hylleraas.cpp
+	$(CPP) -c Hylleraas.cpp -o Hylleraas.o_debug $(CXXFLAGS) $(DEBUGFLAGS)
