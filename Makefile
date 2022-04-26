@@ -13,7 +13,7 @@ BIN      = Hylleraas.exe
 BIN_DEBUG = Hylleraas_debug.exe
 CXXFLAGS = $(CXXINCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
 CFLAGS   = $(INCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
-DEBUGFLAGS = -pg -Og
+DEBUGFLAGS = -pg -Og -g
 RELEASEFLAGS = -O2
 RM       = rm -f
 
@@ -25,10 +25,10 @@ clean: clean-custom
 	${RM} $(OBJ) $(OBJ_DEBUG) $(BIN) $(BIN_DEBUG)
 
 $(BIN): $(OBJ)
-	$(CPP) $(OBJ) -o $(BIN) $(LIBS)
+	$(CPP) $(OBJ) -o $(BIN) $(LIBS) $(RELEASEFLAGS)
 
 $(BIN_DEBUG): $(OBJ_DEBUG)
-	$(CPP) $(OBJ_DEBUG) -o $(BIN_DEBUG) $(LIBS)
+	$(CPP) $(OBJ_DEBUG) -o $(BIN_DEBUG) $(LIBS) $(DEBUGFLAGS)
 
 Hylleraas.o: Hylleraas.cpp
 	$(CPP) -c Hylleraas.cpp -o Hylleraas.o $(CXXFLAGS) $(RELEASEFLAGS)
