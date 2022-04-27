@@ -4,6 +4,7 @@
 #include <numeric>
 #include <cmath>
 #include <chrono>
+#include <cblas.h>
 
 #include "basic_integrals.h"
 #include "integrals.h"
@@ -100,65 +101,12 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator Integ
 }
 
 void matrix_vector_prod(const double alpha, vector<double> & y, const double beta, vector<double> const & A, vector<double> const & x) {
-	if (alpha != 1.0) {
-		if (alpha == 0.0) {
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				y[i] = 0.0 ;
-			}
-		} else {
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				y[i] *= alpha ;
-			}
-		}
-	}
-	if (beta != 0.0) {
-		if (beta == 1.0) {
-			size_t idx = 0 ;
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				double & yi = y[i] ;
-				for (size_t j = 0 ; j < x.size() ; j++) {
-					yi = fma(A[idx], x[j], yi) ;
-					idx++ ;
-				}
-			}
-		} else {
-			size_t idx = 0 ;
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				double yi = 0.0 ;
-				for (size_t j = 0 ; j < x.size() ; j++) {
-					yi = fma(A[idx], x[j], yi) ;
-					idx++ ;
-				}
-				y[i] = fma(beta, yi, y[i]) ;
-				y[i] += beta*yi ;
-			}
-		}
-	}
+  cblas_dsymv(CblasRowMajor, CblasUpper, y.size(), beta, &A[0], x.size(), &x[0], 1, alpha, &y[0], 1);
 }
 
-void vector_add(const double alpha, vector<double> & y, const double beta, vector<double> const & x) {
-	if (alpha != 1.0) {
-		if (alpha == 0.0) {
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				y[i] = 0.0 ;
-			}
-		} else {
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				y[i] *= alpha ;
-			}
-		}
-	}
-	if (beta != 0.0) {
-		if (beta == 1.0) {
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				y[i] += x[i] ;
-			}
-		} else {
-			for (size_t i = 0 ; i < y.size() ; i++) {
-				y[i] = fma(beta, x[i], y[i]) ;
-			}
-		}
-	}
+void vector_add(const double alpha, vector<double> & y, const double beta, vector<double> & x) {
+  cblas_dscal(y.size(), alpha, &y[0], 1);
+  cblas_daxpy(y.size(), beta, &y[0], 1, &x[0], 1);
 }
 
 int main(){

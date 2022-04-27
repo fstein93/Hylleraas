@@ -6,9 +6,9 @@ CC       = gcc
 WINDRES  = windres.exe
 OBJ      = Hylleraas.o
 OBJ_DEBUG = Hylleraas.o_debug
-LIBS     = 
-INCS     = 
-CXXINCS  = 
+LIBS     = -llapack -lblas
+INCS     = -I/usr/include/x86_64-linux-gnu/cblas.h
+CXXINCS  = -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
 BIN      = Hylleraas.exe
 BIN_DEBUG = Hylleraas_debug.exe
 CXXFLAGS = $(CXXINCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
