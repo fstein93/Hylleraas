@@ -6,8 +6,7 @@
 #include <chrono>
 #include <cblas.h>
 
-#include "basic_integrals.h"
-#include "integrals.h"
+#include "integrator.h"
 
 using namespace std ;
 
@@ -23,7 +22,7 @@ unsigned int input_ui(){
 	return ui;
 }
 
-void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const integrator Integrator, const double alpha, const size_t n, const size_t m, const size_t k){
+void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const integrator & Integrator, const size_t n, const size_t m, const size_t k){
 	// Kinetic energy terms
 	size_t idx = 0 ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
@@ -32,9 +31,9 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
 						for (size_t k2 = 0 ; k2 <= k ; k2++) {
-							const double element = integral_kinetic(Integrator, alpha, n1, m1, k1, n2, m2, k2) ;
+							const double element = Integrator.integral_kinetic(n1, m1, k1, n2, m2, k2) ;
 							H[idx] += element ;
-							dH_dalpha[idx] = fma(fac_dalpha_kinetic(Integrator, n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							dH_dalpha[idx] = fma(Integrator.fac_dalpha_kinetic(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
 							idx++ ;
 						}
 					}
@@ -44,15 +43,16 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	}
 	// Nuclear attraction terms
 	idx = 0 ;
+        const double Z_double = (double) Z ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
 						for (size_t k2 = 0 ; k2 <= k ; k2++) {
-							const double element = -integral_nuclear(Integrator, Z, n1+n2, m1+m2, k1+k2) ;
+							const double element = -Z_double*Integrator.integral_nuclear(n1+n2, m1+m2, k1+k2) ;
 							H[idx] += element ;
-							dH_dalpha[idx] += fma(fac_dalpha_nuclear(Integrator, n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							dH_dalpha[idx] += fma(Integrator.fac_dalpha_nuclear(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
 							idx++ ;
 						}
 					}
@@ -68,9 +68,9 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
 						for (size_t k2 = 0 ; k2 <= k ; k2++) {
-							const double element = integral_repulsion(Integrator, n1+n2, m1+m2, k1+k2) ;
+							const double element = Integrator.integral_repulsion(n1+n2, m1+m2, k1+k2) ;
 							H[idx] += element ;
-							dH_dalpha[idx] += fma(fac_dalpha_repulsion(Integrator, n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							dH_dalpha[idx] += fma(Integrator.fac_dalpha_repulsion(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
 							idx++ ;
 						}
 					}
@@ -80,7 +80,7 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	}
 }
 
-void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator Integrator, const size_t n, const size_t m, const size_t k){
+void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator & Integrator, const size_t n, const size_t m, const size_t k){
 	size_t idx = 0 ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
@@ -88,9 +88,9 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator Integ
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
 						for (size_t k2 = 0 ; k2 <= k ; k2++) {
-							const double element = integral_overlap(Integrator, n1+n2, m1+m2, k1+k2) ;
+							const double element = Integrator.integral_overlap(n1+n2, m1+m2, k1+k2) ;
 							S[idx] += element ;
-							dS_dalpha[idx] = fma(fac_dalpha_overlap(Integrator, n1+n2, m1+m2, k1+k2), element, dS_dalpha[idx]) ;
+							dS_dalpha[idx] = fma(Integrator.fac_dalpha_overlap(n1+n2, m1+m2, k1+k2), element, dS_dalpha[idx]) ;
 							idx++ ;
 						}
 					}
@@ -124,7 +124,7 @@ int main(){
 
         const integrator Integrator(alpha, n, m, k);
 	
-	if (true) {
+	if (false) {
 		printf("exp_integral %zu %f\n", n+m+2*k+5, 2.0*alpha);
 		for (size_t i = 0 ; i < n+m+2*k+6 ; i++) {
 			printf("%zu %f\n", i, Integrator.exp_integral(i));
@@ -151,7 +151,7 @@ int main(){
 	if (true) {
 		double tstart, tend ;
 		tstart = clock() ;
-		calc_H(H, dH_dalpha, Z, Integrator, alpha, n, m, k) ;
+		calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
 		tend = clock() ;
 		printf("Time calc_H : %f\n", (tstart-tend)/CLOCKS_PER_SEC);
 		tstart = clock() ;
