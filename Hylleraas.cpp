@@ -153,11 +153,11 @@ int main(){
 		tstart = clock() ;
 		calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
 		tend = clock() ;
-		printf("Time calc_H : %f\n", (tstart-tend)/CLOCKS_PER_SEC);
+		printf("Time calc_H : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
 		tstart = clock() ;
 		calc_S(S, dS_dalpha, Integrator, n, m, k) ;
 		tend = clock() ;
-		printf("Time calc_S : %f\n", (tstart-tend)/CLOCKS_PER_SEC);
+		printf("Time calc_S : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
 		
 		vector<double> coefficients(dim) ;
 		
@@ -197,7 +197,7 @@ int main(){
 		printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)+denergy_dalpha*denergy_dalpha)) ;
 		
 		tend = clock() ;
-		printf("Time energy : %f\n", (tstart-tend)/CLOCKS_PER_SEC);
+		printf("Time energy : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
 	}
 	
 	// Set values of arrays

@@ -42,19 +42,19 @@ class integrator {
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-		        return integral_st(n, m+1, k);
+                        return 4.0*((double) 4*k+m+6)/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+3))*((double) (2*k+m+5)))*exp_integral(2*k+m+n+5);
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {
-		        return fac_dintegral_st(n, m+1, k);
+                        return -((double) (2*k+m+n+6))/alpha ;
 		}
 
 		double integral_nuclear(const size_t n, const size_t m, const size_t k) const {
-		        return 4.0*integral_plain(n+1, m+1, k);
+                        return 8.0/(((double) (2*k+1))*((double) (2*k+m+3)))*exp_integral(2*k+m+n+4);
 		}
 
 		double fac_dalpha_nuclear(const size_t n, const size_t m, const size_t k) const {
-		        return fac_dintegral_plain(n+1, m+1, k);
+                        return -((double) (2*k+m+n+5))/alpha ;
 		}
 
 		double integral_kinetic(const size_t n1, const size_t m1, const size_t k1, const size_t n2, const size_t m2, const size_t k2) const {
@@ -70,15 +70,15 @@ class integrator {
 		}
 
 		double fac_dalpha_kinetic(const size_t n, const size_t m, const size_t k) const {
-		        return fac_dintegral_st(n, m-1, k);
+                        return -((double) (2*k+m+n+4))/alpha ;
 		}
 
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
-		        return integral_st(n, m, k);
+                        return 4.0*((double) 4*k+m+5)/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {
-		        return fac_dintegral_st(n, m, k);
+                        return -((double) (2*k+m+n+5))/alpha ;
 		}
 	private:
 		std::vector<double> basic_integrals ;
