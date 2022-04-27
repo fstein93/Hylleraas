@@ -28,9 +28,9 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = 0 ; n2 <= n ; n2++) {
-					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+				for (size_t n2 = n1 ; n2 <= n ; n2++) {
+					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
+						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
 							const double element = Integrator.integral_kinetic(n1, m1, k1, n2, m2, k2) ;
 							H[idx] += element ;
 							dH_dalpha[idx] = fma(Integrator.fac_dalpha_kinetic(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
@@ -47,12 +47,12 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = 0 ; n2 <= n ; n2++) {
-					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+				for (size_t n2 = n1 ; n2 <= n ; n2++) {
+					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
+						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
 							const double element = -Z_double*Integrator.integral_nuclear(n1+n2, m1+m2, k1+k2) ;
 							H[idx] += element ;
-							dH_dalpha[idx] += fma(Integrator.fac_dalpha_nuclear(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							dH_dalpha[idx] = fma(Integrator.fac_dalpha_nuclear(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
 							idx++ ;
 						}
 					}
@@ -65,12 +65,12 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = 0 ; n2 <= n ; n2++) {
-					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+				for (size_t n2 = n1 ; n2 <= n ; n2++) {
+					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
+						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
 							const double element = Integrator.integral_repulsion(n1+n2, m1+m2, k1+k2) ;
 							H[idx] += element ;
-							dH_dalpha[idx] += fma(Integrator.fac_dalpha_repulsion(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							dH_dalpha[idx] = fma(Integrator.fac_dalpha_repulsion(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
 							idx++ ;
 						}
 					}
@@ -85,8 +85,8 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator & Int
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = 0 ; n2 <= n ; n2++) {
-					for (size_t m2 = 0 ; m2 <= m ; m2++) {
+				for (size_t n2 = n1 ; n2 <= n ; n2++) {
+					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
 						for (size_t k2 = 0 ; k2 <= k ; k2++) {
 							const double element = Integrator.integral_overlap(n1+n2, m1+m2, k1+k2) ;
 							S[idx] += element ;
