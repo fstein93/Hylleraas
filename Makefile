@@ -26,16 +26,16 @@ clean: clean-custom
 	${RM} $(OBJ) $(OBJ_DEBUG) $(BIN) $(BIN_DEBUG)
 
 $(BIN): $(OBJ)
-	$(CPP) $(OBJ) -o $(BIN) $(LIBS) $(RELEASEFLAGS)
+	$(CPP) -o $@ $< $(LIBS) $(RELEASEFLAGS)
 
 $(BIN_DEBUG): $(OBJ_DEBUG)
-	$(CPP) $(OBJ_DEBUG) -o $(BIN_DEBUG) $(LIBS) $(DEBUGFLAGS)
+	$(CPP) -o $@ $< $(LIBS) $(DEBUGFLAGS)
 
 $(OBJ): Hylleraas.cpp $(DEPS)
-	$(CPP) -c Hylleraas.cpp -o Hylleraas.o $(CXXFLAGS) $(RELEASEFLAGS)
+	$(CPP) -c -o $@ $< $(CXXFLAGS) $(RELEASEFLAGS)
 
 $(OBJ_DEBUG): Hylleraas.cpp $(DEPS)
-	$(CPP) -c Hylleraas.cpp -o Hylleraas.o_debug $(CXXFLAGS) $(DEBUGFLAGS)
+	$(CPP) -c -o $@ $< $(CXXFLAGS) $(DEBUGFLAGS)
 
 $(DEPS):
 	
