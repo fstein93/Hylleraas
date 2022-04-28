@@ -4,11 +4,11 @@
 CPP      = g++
 CC       = gcc
 
-_SRC = Hylleraas.cpp
 _DEPS = integrator.h
 
+SRC_DIRS := ./src
 
-SRC = $(_SRC)
+SRC = $(shell find $(SRC_DIRS) -name '*.cpp')
 DEPS = $(_DEPS)
 
 OBJ      = Hylleraas.o
