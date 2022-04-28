@@ -1,48 +1,52 @@
-# Project: Projekt1
-# Makefile created by Dev-C++ 5.11
+# Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
+TARGET_EXEC := Hylleraas
 
-CPP      = g++
-CC       = gcc
-
-_DEPS = integrator.h
-
+BUILD_DIR := ./build
 SRC_DIRS := ./src
 
-SRC = $(shell find $(SRC_DIRS) -name '*.cpp')
-DEPS = $(_DEPS)
+# Find all the C and C++ files we want to compile
+# Note the single quotes around the * expressions. Make will incorrectly expand these otherwise.
+SRCS := $(shell find $(SRC_DIRS) -name '*.cpp' -or -name '*.c' -or -name '*.s')
 
-OBJ      = Hylleraas.o
-OBJ_DEBUG = Hylleraas.o_debug
-LIBS     = -llapack -lblas
-INCS     = -I/usr/include/x86_64-linux-gnu/cblas.h
-CXXINCS  = -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
-BIN      = Hylleraas.exe
-BIN_DEBUG = Hylleraas_debug.exe
-CXXFLAGS = $(CXXINCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
-CFLAGS   = $(INCS) -march=native -std=gnu++11 -Wall -Wextra -pedantic
-DEBUGFLAGS = -pg -Og -g
-RELEASEFLAGS = -O2
-RM       = rm -f
+# String substitution for every C/C++ file.
+# As an example, hello.cpp turns into ./build/hello.cpp.o
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
-.PHONY: all all-before all-after clean clean-custom
+# String substitution (suffix version without %).
+# As an example, ./build/hello.cpp.o turns into ./build/hello.cpp.d
+DEPS := $(OBJS:.o=.d)
 
-all: all-before $(BIN) $(BIN_DEBUG) all-after
+# Every folder in ./src will need to be passed to GCC so that it can find header files
+INC_DIRS := $(shell find $(SRC_DIRS) -type d) -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas -I/usr/include/x86_64-linux-gnu/cblas.h
+# Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-clean: clean-custom
-	${RM} $(OBJ) $(OBJ_DEBUG) $(BIN) $(BIN_DEBUG)
+LDFLAGS := -llapack -lblas -lm
 
-$(BIN): $(OBJ)
-	$(CPP) -o $@ $< $(LIBS) $(RELEASEFLAGS)
+# The -MMD and -MP flags together generate Makefiles for us!
+# These files will have .d instead of .o as the output.
+CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
-$(BIN_DEBUG): $(OBJ_DEBUG)
-	$(CPP) -o $@ $< $(LIBS) $(DEBUGFLAGS)
+# The final build step.
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
-$(OBJ): $(SRC) $(DEPS)
-	$(CPP) -c -o $@ $< $(CXXFLAGS) $(RELEASEFLAGS)
+# Build step for C source
+$(BUILD_DIR)/%.c.o: %.c
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DEBUG): $(SRC) $(DEPS)
-	$(CPP) -c -o $@ $< $(CXXFLAGS) $(DEBUGFLAGS)
+# Build step for C++ source
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(DEPS):
-	
 
+.PHONY: clean
+clean:
+	rm -r $(BUILD_DIR)
+
+# Include the .d makefiles. The - at the front suppresses the errors of missing
+# Makefiles. Initially, all the .d files will be missing, and we don't want those
+# errors to show up.
+-include $(DEPS)
