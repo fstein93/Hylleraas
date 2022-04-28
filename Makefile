@@ -4,7 +4,13 @@
 CPP      = g++
 CC       = gcc
 
-DEPS = integrator.h
+_SRC = Hylleraas.cpp
+_DEPS = integrator.h
+
+
+SRC = $(_SRC)
+DEPS = $(_DEPS)
+
 OBJ      = Hylleraas.o
 OBJ_DEBUG = Hylleraas.o_debug
 LIBS     = -llapack -lblas
@@ -31,10 +37,10 @@ $(BIN): $(OBJ)
 $(BIN_DEBUG): $(OBJ_DEBUG)
 	$(CPP) -o $@ $< $(LIBS) $(DEBUGFLAGS)
 
-$(OBJ): Hylleraas.cpp $(DEPS)
+$(OBJ): $(SRC) $(DEPS)
 	$(CPP) -c -o $@ $< $(CXXFLAGS) $(RELEASEFLAGS)
 
-$(OBJ_DEBUG): Hylleraas.cpp $(DEPS)
+$(OBJ_DEBUG): $(SRC) $(DEPS)
 	$(CPP) -c -o $@ $< $(CXXFLAGS) $(DEBUGFLAGS)
 
 $(DEPS):
