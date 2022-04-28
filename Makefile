@@ -3,7 +3,6 @@
 
 CPP      = g++
 CC       = gcc
-WINDRES  = windres.exe
 OBJ      = Hylleraas.o
 OBJ_DEBUG = Hylleraas.o_debug
 LIBS     = -llapack -lblas
@@ -30,8 +29,8 @@ $(BIN): $(OBJ)
 $(BIN_DEBUG): $(OBJ_DEBUG)
 	$(CPP) $(OBJ_DEBUG) -o $(BIN_DEBUG) $(LIBS) $(DEBUGFLAGS)
 
-Hylleraas.o: Hylleraas.cpp
+$(OBJ): Hylleraas.cpp
 	$(CPP) -c Hylleraas.cpp -o Hylleraas.o $(CXXFLAGS) $(RELEASEFLAGS)
 
-Hylleraas.o_debug: Hylleraas.cpp
+$(OBJ_DEBUG): Hylleraas.cpp
 	$(CPP) -c Hylleraas.cpp -o Hylleraas.o_debug $(CXXFLAGS) $(DEBUGFLAGS)
