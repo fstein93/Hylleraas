@@ -3,6 +3,8 @@
 
 CPP      = g++
 CC       = gcc
+
+DEPS = integrator.h
 OBJ      = Hylleraas.o
 OBJ_DEBUG = Hylleraas.o_debug
 LIBS     = -llapack -lblas
@@ -29,8 +31,12 @@ $(BIN): $(OBJ)
 $(BIN_DEBUG): $(OBJ_DEBUG)
 	$(CPP) $(OBJ_DEBUG) -o $(BIN_DEBUG) $(LIBS) $(DEBUGFLAGS)
 
-$(OBJ): Hylleraas.cpp
+$(OBJ): Hylleraas.cpp $(DEPS)
 	$(CPP) -c Hylleraas.cpp -o Hylleraas.o $(CXXFLAGS) $(RELEASEFLAGS)
 
-$(OBJ_DEBUG): Hylleraas.cpp
+$(OBJ_DEBUG): Hylleraas.cpp $(DEPS)
 	$(CPP) -c Hylleraas.cpp -o Hylleraas.o_debug $(CXXFLAGS) $(DEBUGFLAGS)
+
+$(DEPS):
+	
+
