@@ -3,6 +3,7 @@ TARGET_EXEC := Hylleraas
 
 BUILD_DIR := ./build
 SRC_DIR := ./src
+EXE_DIR := ./exe
 
 LDFLAGS := -llapack -lblas -lm
 INCFLAGS := -I/usr/include/x86_64-linux-gnu/cblas.h
@@ -26,7 +27,8 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
 # The final build step.
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+$(EXE_DIR)/$(TARGET_EXEC): $(OBJS)
+	mkdir -p $(dir $@)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 # Build step for C++ source

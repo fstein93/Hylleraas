@@ -4,3 +4,4 @@
 *.o_debug
 analysis.txt*
 build/
+exe/
