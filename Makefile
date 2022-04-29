@@ -12,8 +12,10 @@ INCFLAGS := -I/usr/include/x86_64-linux-gnu/cblas.h
 LIBS := -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
 WARN_FLAGS :=  -Wall -Werror -Wextra -pedantic -Wshadow -Wsign-conversion -Wunreachable-code
 # -Wconversion
-RELEASE_FALGS := -O2
-DEBUG_FLAGS := -O0 -g -pg
+RELEASE_FALGS := -O2 -march=native
+# -fno-elide-constructors -std=c++11
+DEBUG_FLAGS := -O0 -g -pg -march=native
+# -fcheck-new -std=c++11
 
 EXE_RELEASE := $(EXE_RELEASE_DIR)/$(_TARGET_EXEC)
 EXE_DEBUG := $(EXE_DEBUG_DIR)/$(_TARGET_EXEC)
@@ -40,11 +42,11 @@ all: $(EXE_RELEASE) $(EXE_DEBUG)
 # The final build step.
 $(EXE_RELEASE): $(OBJS_RELEASE)
 	mkdir -p $(dir $@)
-	$(CXX) $(OBJS_RELEASE) -o $@ $(LDFLAGS) $(RELEASE_FLAGS)
+	$(CXX) $(OBJS_RELEASE) -o $@ $(LDFLAGS) $(RELEASE_FLAGS) $(WARN_FLAGS)
 
 $(EXE_DEBUG): $(OBJS_DEBUG)
 	mkdir -p $(dir $@)
-	$(CXX) $(OBJS_DEBUG) -o $@ $(LDFLAGS) $(DEBUG_FLAGS)
+	$(CXX) $(OBJS_DEBUG) -o $@ $(LDFLAGS) $(DEBUG_FLAGS) $(WARN_FLAGS)
 
 # Build step for C++ source
 $(OBJS_RELEASE): $(SRCS)
