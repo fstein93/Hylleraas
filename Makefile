@@ -1,7 +1,7 @@
 # Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
 TARGET_EXEC := Hylleraas
 
-BUILD_DIR := ./build
+BUILD_DIR := ./build/release
 SRC_DIR := ./src
 EXE_DIR := ./exe
 
