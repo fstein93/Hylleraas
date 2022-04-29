@@ -1,14 +1,17 @@
 # Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
-TARGET_EXEC := Hylleraas
+_TARGET_EXEC := Hylleraas
 
 BUILD_DIR := ./build/release
 SRC_DIR := ./src
-EXE_DIR := ./exe
+EXE_RELEASE_DIR := ./exe/release
+EXE_DEBUG_DIR := ./exe/debug
 
 LDFLAGS := -llapack -lblas -lm
 INCFLAGS := -I/usr/include/x86_64-linux-gnu/cblas.h
 LIBS := -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
 
+EXE_RELEASE := $(EXE_RELEASE_DIR)/$(_TARGET_EXEC)
+EXE_DEBUG := $(EXE_DEBUG_DIR)/$(_TARGET_EXEC)
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. Make will incorrectly expand these otherwise.
@@ -26,8 +29,14 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 # These files will have .d instead of .o as the output.
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
+all: $(EXE_RELEASE) $(EXE_DEBUG)
+
 # The final build step.
-$(EXE_DIR)/$(TARGET_EXEC): $(OBJS_RELEASE)
+$(EXE_RELEASE): $(OBJS_RELEASE)
+	mkdir -p $(dir $@)
+	$(CXX) $(OBJS_RELEASE) -o $@ $(LDFLAGS)
+
+$(EXE_DEBUG): $(OBJS_RELEASE)
 	mkdir -p $(dir $@)
 	$(CXX) $(OBJS_RELEASE) -o $@ $(LDFLAGS)
 
@@ -39,5 +48,5 @@ $(OBJS_RELEASE): $(SRCS)
 
 .PHONY: clean
 clean:
-	rm -r $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(EXE_RELEASE_DIR) $(EXE_DEBUG_DIR)
 
