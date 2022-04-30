@@ -17,32 +17,32 @@ class integrator {
 			return basic_integrals[n] ;
 		}
 		double integral_plain(const size_t n, const size_t m, const size_t k) const {
-			return 2.0/(((double) (2*k+1))*((double) (2*k+m+2)))*exp_integral(2*k+m+n+2);
+			return 2.0/(((double) (2*k+1))*((double) (2*k+m+2)))*basic_integrals[2*k+m+n+2];
 		}
 		double fac_dintegral_plain(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (2*k+m+n+3))/alpha ;
 		}
 		double integral_st(const size_t n, const size_t m, const size_t k) const {
-			return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*basic_integrals[2*k+m+n+4];
 		}
 		double fac_dintegral_st(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (2*k+m+n+5))/alpha ;
 		}
 		double integral_ut(const size_t n, const size_t m, const size_t k) const {
-			return 4.0/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return 4.0/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+4)))*basic_integrals[2*k+m+n+4];
 		}
 		double fac_dintegral_ut(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (2*k+m+n+5))/alpha ;
 		}
 		double integral_su(const size_t n, const size_t m, const size_t k) const {
-			return -4.0/(((double) (2*k+1))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return -4.0/(((double) (2*k+1))*((double) (2*k+m+2))*((double) (2*k+m+4)))*basic_integrals[2*k+m+n+4];
 		}
 		double fac_dintegral_su(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (2*k+m+n+5))/alpha ;
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return 4.0*((double) (4*k+m+6))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+3))*((double) (2*k+m+5)))*exp_integral(2*k+m+n+5);
+                        return 4.0*((double) (4*k+m+6))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+3))*((double) (2*k+m+5)))*basic_integrals[2*k+m+n+5];
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {
@@ -50,7 +50,7 @@ class integrator {
 		}
 
 		double integral_nuclear(const size_t n, const size_t m, const size_t k) const {
-                        return 8.0/(((double) (2*k+1))*((double) (2*k+m+3)))*exp_integral(2*k+m+n+4);
+                        return 8.0/(((double) (2*k+1))*((double) (2*k+m+3)))*basic_integrals[2*k+m+n+4];
 		}
 
 		double fac_dalpha_nuclear(const size_t n, const size_t m, const size_t k) const {
@@ -74,7 +74,7 @@ class integrator {
 		}
 
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+                        return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*basic_integrals[2*k+m+n+4];
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {
