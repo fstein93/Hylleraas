@@ -11,8 +11,9 @@ LDFLAGS := -llapack -lblas -lm
 INCFLAGS := -I/usr/include/x86_64-linux-gnu/
 LIBS := -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
 WARN_FLAGS :=  -Wall -Werror -Wextra -pedantic -Wshadow -Wsign-conversion -Wunreachable-code -Wconversion
-RELEASE_FALGS := -O2 -march=native -std=c++11
-DEBUG_FLAGS := -O0 -g -pg -march=native -std=c++11
+RELEASE_FLAGS := -O2 -g0 -march=native -std=c++11 -fdelete-dead-exceptions
+DEBUG_FLAGS := -Og -g -pg -march=native -std=c++11 -fbounds-check -fstack-protector -fcf-protection -fsanitize=leak,undefined
+# -fsanitize=address
 
 EXE_RELEASE := $(EXE_RELEASE_DIR)/$(_TARGET_EXEC)
 EXE_DEBUG := $(EXE_DEBUG_DIR)/$(_TARGET_EXEC)
