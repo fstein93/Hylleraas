@@ -20,6 +20,7 @@ EXE_DEBUG := $(EXE_DEBUG_DIR)/$(_TARGET_EXEC)
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. Make will incorrectly expand these otherwise.
 SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
+HEADERS := $(shell find $(SRC_DIR) -name '*.h')
 
 # String substitution for every C/C++ file.
 # As an example, hello.cpp turns into ./build/hello.cpp.o
@@ -46,12 +47,12 @@ $(EXE_DEBUG): $(OBJS_DEBUG)
 	$(CXX) $(OBJS_DEBUG) -o $@ $(LDFLAGS) $(DEBUG_FLAGS) $(WARN_FLAGS)
 
 # Build step for C++ source
-$(OBJS_RELEASE): $(SRCS)
+$(OBJS_RELEASE): $(SRCS) $(HEADERS)
 	mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(RELEASE_FLAGS) -c $< -o $@
 
 # Build step for C++ source
-$(OBJS_DEBUG): $(SRCS)
+$(OBJS_DEBUG): $(SRCS) $(HEADERS)
 	mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(DEBUG_FLAGS) -c $< -o $@
 
