@@ -8,7 +8,7 @@ EXE_RELEASE_DIR := ./exe/release
 EXE_DEBUG_DIR := ./exe/debug
 
 LDFLAGS := -llapack -lblas -lm
-INCFLAGS := -I/usr/include/x86_64-linux-gnu/cblas.h
+INCFLAGS := -I/usr/include/x86_64-linux-gnu/
 LIBS := -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
 WARN_FLAGS :=  -Wall -Werror -Wextra -pedantic -Wshadow -Wsign-conversion -Wunreachable-code -Wconversion
 RELEASE_FALGS := -O2 -march=native -std=c++11
@@ -28,8 +28,8 @@ OBJS_RELEASE := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_RELEASE_DIR)/%.o)
 OBJS_DEBUG := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DEBUG_DIR)/%.o)
 
 # Every folder in ./src will need to be passed to GCC so that it can find header files
-INC_DIRS := $(shell find $(SRC_DIR) -type d) $(LIBS) $(INCFLAGS)
-INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+INC_DIRS := $(LIBS) $(INCFLAGS)
+INC_FLAGS := $(INC_DIRS)
 
 # The -MMD and -MP flags together generate Makefiles for us!
 # These files will have .d instead of .o as the output.
