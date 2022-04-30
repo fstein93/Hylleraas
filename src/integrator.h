@@ -1,19 +1,20 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
-#include <vector>
-
 class integrator {
 	public:
 		integrator(const double alpha_, const size_t n, const size_t m, const size_t k) {
                         alpha = alpha_;
-			basic_integrals.resize(n+m+2*k+6);
+			if (basic_integrals != NULL) delete basic_integrals ;
+			basic_integrals = new double[n+m+2*k+6] ;
 			basic_integrals[0] = 0.5/alpha;
-			for (size_t i = 1 ; i < basic_integrals.size() ; i++ ) {
+			for (size_t i = 1 ; i < n+m+2*k+6 ; i++ ) {
 				basic_integrals[i] = ((double) i)*(0.5/alpha)*basic_integrals[i-1];
 			}
 		}
+		integrator() {if (basic_integrals != NULL) delete basic_integrals ;}
 		double exp_integral(const size_t n) const {
+			if (n < size_basic_integrals) return 0.0 ;
 			return basic_integrals[n] ;
 		}
 		double integral_plain(const size_t n, const size_t m, const size_t k) const {
@@ -81,7 +82,8 @@ class integrator {
                         return -((double) (2*k+m+n+5))/alpha ;
 		}
 	private:
-		std::vector<double> basic_integrals ;
+		double* basic_integrals = NULL ;
+		size_t size_basic_integrals = 0 ;
 		double alpha ;
 };
 
