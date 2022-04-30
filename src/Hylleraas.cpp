@@ -201,5 +201,5 @@ int main(){
 	}
 	
 	// Set values of arrays
-	return 1;
+	return 0;
 }
