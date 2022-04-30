@@ -23,7 +23,7 @@ class integrator {
 			return -((double) (2*k+m+n+3))/alpha ;
 		}
 		double integral_st(const size_t n, const size_t m, const size_t k) const {
-			return 4.0*((double) 4*k+m+5)/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
 		}
 		double fac_dintegral_st(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (2*k+m+n+5))/alpha ;
@@ -42,7 +42,7 @@ class integrator {
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return 4.0*((double) 4*k+m+6)/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+3))*((double) (2*k+m+5)))*exp_integral(2*k+m+n+5);
+                        return 4.0*((double) (4*k+m+6))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+3))*((double) (2*k+m+5)))*exp_integral(2*k+m+n+5);
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {
@@ -59,7 +59,7 @@ class integrator {
 
 		double integral_kinetic(const size_t n1, const size_t m1, const size_t k1, const size_t n2, const size_t m2, const size_t k2) const {
 		        return alpha*alpha*integral_st(n1+n2, m1+m2+1, k1+k2)
-		        +(n1+n2>0 ? -alpha*((double) n1+n2)*integral_st(n1+n2-1, m1+m2+1, k1+k2) : 0.0)
+		        +(n1+n2>0 ? -alpha*((double) (n1+n2))*integral_st(n1+n2-1, m1+m2+1, k1+k2) : 0.0)
 		        +((n1>0 && n2>0) ? ((double) n1)*((double) n2)*integral_st(n1+n2-2, m1+m2+1, k1+k2) : 0.0)
 		        +((k1>0 && k2>0) ? 4.0*((double) k1)*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1) : 0.0)
 		        +((m1>0 && m2>0) ? ((double) m1)*((double) m2)*integral_st(n1+n2, m1+m2-1, k1+k2) : 0.0)
@@ -74,7 +74,7 @@ class integrator {
 		}
 
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return 4.0*((double) 4*k+m+5)/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+                        return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {

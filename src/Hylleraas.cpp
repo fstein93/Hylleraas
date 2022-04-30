@@ -101,12 +101,12 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator & Int
 }
 
 void matrix_vector_prod(const double alpha, vector<double> & y, const double beta, vector<double> const & A, vector<double> const & x) {
-  cblas_dsymv(CblasRowMajor, CblasUpper, y.size(), beta, &A[0], x.size(), &x[0], 1, alpha, &y[0], 1);
+  cblas_dsymv(CblasRowMajor, CblasUpper, (blasint) (y.size()), beta, &A[0], (blasint) (x.size()), &x[0], 1, alpha, &y[0], 1);
 }
 
 void vector_add(const double alpha, vector<double> & y, const double beta, vector<double> & x) {
-  cblas_dscal(y.size(), alpha, &y[0], 1);
-  cblas_daxpy(y.size(), beta, &y[0], 1, &x[0], 1);
+  cblas_dscal((blasint) (y.size()), alpha, &y[0], 1);
+  cblas_daxpy((blasint) (y.size()), beta, &y[0], 1, &x[0], 1);
 }
 
 int main(){
@@ -150,20 +150,20 @@ int main(){
 	// Calculate arrays
 	if (true) {
 		double tstart, tend ;
-		tstart = clock() ;
+		tstart = double(clock()) ;
 		calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
-		tend = clock() ;
+		tend = double(clock()) ;
 		printf("Time calc_H : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
-		tstart = clock() ;
+		tstart = double(clock()) ;
 		calc_S(S, dS_dalpha, Integrator, n, m, k) ;
-		tend = clock() ;
+		tend = double(clock()) ;
 		printf("Time calc_S : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
 		
 		vector<double> coefficients(dim) ;
 		
 		coefficients[0] = 1.0 ;
 		
-		tstart = clock() ;
+		tstart = double(clock()) ;
 		
 		vector<double> h_coeff(dim) ;
 		matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
@@ -196,7 +196,7 @@ int main(){
 		printf("Energy: %f\n", energy);
 		printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)+denergy_dalpha*denergy_dalpha)) ;
 		
-		tend = clock() ;
+		tend = double(clock()) ;
 		printf("Time energy : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
 	}
 	
