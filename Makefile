@@ -12,10 +12,10 @@ INCFLAGS := -I/usr/include/x86_64-linux-gnu/cblas.h
 LIBS := -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/x86_64-linux-gnu/blas
 WARN_FLAGS :=  -Wall -Werror -Wextra -pedantic -Wshadow -Wsign-conversion -Wunreachable-code
 # -Wconversion
-RELEASE_FALGS := -O2 -march=native
-# -fno-elide-constructors -std=c++11
-DEBUG_FLAGS := -O0 -g -pg -march=native
-# -fcheck-new -std=c++11
+RELEASE_FALGS := -O2 -march=native -std=c++11
+# -fno-elide-constructors
+DEBUG_FLAGS := -O0 -g -pg -march=native -std=c++11
+# -fcheck-new
 
 EXE_RELEASE := $(EXE_RELEASE_DIR)/$(_TARGET_EXEC)
 EXE_DEBUG := $(EXE_DEBUG_DIR)/$(_TARGET_EXEC)
