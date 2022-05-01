@@ -111,21 +111,56 @@ void vector_add(const double alpha, vector<double> & y, const double beta, vecto
 }
 
 void test_integrator() {
-	const integrator Integrator(0.5, 3, 3, 3);
+	constexpr double alpha1 = 0.5 ;
+	const integrator Integrator1(alpha1, 3, 3, 3);
 
         constexpr double factorials[] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0, 39916800.0, 479001600.0} ;
 
+	double error_exp_integral = 0.0 ;
         for (size_t i = 0 ; i < 13 ; i++) {
-		cout << i << " " << Integrator.exp_integral(i)/factorials[i]-1.0 << endl ;
+		error_exp_integral += abs(Integrator1.exp_integral(i)/factorials[i]-1.0) ;
 	}
 
-        const integrator Integrator2(1.0, 3, 3, 3);
+        double error_kinetic = 0.0 ;
+        error_kinetic += abs(Integrator1.integral_kinetic(0, 0, 0, 0, 0, 0)*pow(alpha1, 4)-1.0) ;
+
+        double error_nuclear = 0.0 ;
+        error_nuclear += abs(0.5*Integrator1.integral_nuclear(0, 0, 0)*pow(alpha1, 5)-1.0) ;
+
+        double error_repulsion = 0.0 ;
+        error_repulsion += abs(1.6*Integrator1.integral_repulsion(0, 0, 0)*pow(alpha1, 5)-1.0) ;
+
+        double error_overlap = 0.0 ;
+        error_overlap += abs(Integrator1.integral_overlap(0, 0, 0)*pow(alpha1, 6)-1.0) ;
+
+	constexpr double alpha2 = 1.0 ;
+        const integrator Integrator2(alpha2, 3, 3, 3);
 
         constexpr double factorials2[] = {0.5, 0.25, 0.25, 0.375, 0.75, 1.875, 5.625, 19.6875, 78.75, 354.375, 1771.875, 9745.3125, 58471.875} ;
 
         for (size_t i = 0 ; i < 13 ; i++) {
-                cout << i << " " << Integrator2.exp_integral(i)/factorials2[i]-1.0 << endl ;
+                error_exp_integral += abs(Integrator2.exp_integral(i)/factorials2[i]-1.0) ;
         }
+
+        error_kinetic += abs(Integrator2.integral_kinetic(0, 0, 0, 0, 0, 0)*pow(alpha2, 4)-1.0) ;
+        error_nuclear += abs(0.5*Integrator2.integral_nuclear(0, 0, 0)*pow(alpha2, 5)-1.0) ;
+        error_repulsion += abs(1.6*Integrator2.integral_repulsion(0, 0, 0)*pow(alpha2, 5)-1.0) ;
+        error_overlap += abs(Integrator2.integral_overlap(0, 0, 0)*pow(alpha2, 6)-1.0) ;
+
+	error_exp_integral /= 26.0 ;
+	cout << "Error exp_integral " << error_exp_integral << endl ;
+
+	error_kinetic /= 2.0 ;
+	cout << "Error kinetic " << error_kinetic << endl ;
+
+        error_nuclear /= 2.0 ;
+        cout << "Error nuclear " << error_nuclear << endl ;
+
+        error_repulsion /= 2.0 ;
+        cout << "Error repulsion " << error_repulsion << endl ;
+
+        error_repulsion /= 2.0 ;
+        cout << "Error overlap " << error_overlap << endl ;
 }
 
 int main(){
