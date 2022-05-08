@@ -57,6 +57,8 @@ $(OBJS_DEBUG): $(SRCS) $(HEADERS)
 	mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(DEBUG_FLAGS) -c $< -o $@
 
+check: $(EXE_DEBUG)
+	$(EXE_DEBUG) < test.inp
 
 .PHONY: clean
 clean:
