@@ -132,6 +132,8 @@ void test_integrator() {
 
         double error_overlap = 0.0 ;
         error_overlap += abs(Integrator1.integral_overlap(0, 0, 0)*pow(alpha1, 6)-1.0) ;
+        error_overlap += abs(Integrator1.integral_overlap(0, 1, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
+        error_overlap += abs(Integrator1.integral_overlap(0, 2, 0)*pow(alpha1, 8)/6.0-1.0) ;
 
 	constexpr double alpha2 = 1.0 ;
         const integrator Integrator2(alpha2, 3, 3, 3);
@@ -146,6 +148,8 @@ void test_integrator() {
         error_nuclear += abs(0.5*Integrator2.integral_nuclear(0, 0, 0)*pow(alpha2, 5)-1.0) ;
         error_repulsion += abs(1.6*Integrator2.integral_repulsion(0, 0, 0)*pow(alpha2, 5)-1.0) ;
         error_overlap += abs(Integrator2.integral_overlap(0, 0, 0)*pow(alpha2, 6)-1.0) ;
+	error_overlap += abs(Integrator2.integral_overlap(0, 1, 0)*pow(alpha2, 7)*(16.0/35.0)-1.0) ;
+	error_overlap += abs(Integrator2.integral_overlap(0, 2, 0)*pow(alpha2, 8)/6.0-1.0) ;
 
 	error_exp_integral /= 26.0 ;
 	cout << "Error exp_integral " << error_exp_integral << endl ;
@@ -159,7 +163,7 @@ void test_integrator() {
         error_repulsion /= 2.0 ;
         cout << "Error repulsion " << error_repulsion << endl ;
 
-        error_repulsion /= 2.0 ;
+        error_overlap /= 4.0 ;
         cout << "Error overlap " << error_overlap << endl ;
 }
 
