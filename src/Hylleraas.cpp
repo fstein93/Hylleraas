@@ -189,7 +189,7 @@ int main(){
 	const size_t m = input_ui() ;
 	const size_t k = input_ui() ;
 
-	const double gamma0 = 0.01 ;
+	const double gamma0 = 0.5 ;
 	
 	// Create working arrays
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
@@ -239,12 +239,11 @@ int main(){
 		const double coeff_s_coeff = inner_product(coefficients.begin(), coefficients.end(), s_coeff.begin(), 0.0) ;
 		const double inv_norm = 1.0/coeff_s_coeff ;
 	
-		const double energy = coeff_h_coeff/coeff_s_coeff ;
+		const double energy = coeff_h_coeff*inv_norm ;
 
 		vector<double> nabla_energy(dim) ;
 		vector_add(0.0, nabla_energy, 1.0, h_coeff);
-		vector_add(1.0, nabla_energy, -energy, s_coeff);
-		vector_add(2.0*inv_norm, nabla_energy, 0.0, h_coeff);
+		vector_add(2.0*inv_norm, nabla_energy, -2.0*energy*inv_norm, s_coeff);
 	
 		vector<double> dh_dalpha_coeff(dim) ;
 		matrix_vector_prod(0.0, dh_dalpha_coeff, 1.0, dH_dalpha, coefficients);
