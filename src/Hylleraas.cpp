@@ -181,6 +181,8 @@ int main(){
 	const size_t n = input_ui() ;
 	const size_t m = input_ui() ;
 	const size_t k = input_ui() ;
+
+	const double gamma0 = 0.1 ;
 	
 	// Create working arrays
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
@@ -193,8 +195,13 @@ int main(){
 	
 	coefficients[0] = 1.0 ;
 
-	size_t num_iter = 10 ;
+	size_t num_iter = 3 ;
 	double alpha = alpha0 ;
+	double gamma = gamma0 ;
+
+	vector<double> gradient_old(dim) ;
+	gradient_old[0] = alpha ;
+	vector<double> coefficient_old(dim) ;
 
 	for (size_t iter = 1 ; iter <= num_iter ; iter++) {
 
@@ -224,6 +231,7 @@ int main(){
 		const double coeff_h_coeff = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
 		const double coeff_s_coeff = inner_product(coefficients.begin(), coefficients.end(), s_coeff.begin(), 0.0) ;
 		const double inv_norm = 1.0/coeff_s_coeff ;
+		printf("Norm psi: %f\n", inv_norm) ;
 	
 		const double energy = coeff_h_coeff/coeff_s_coeff ;
 
@@ -242,9 +250,34 @@ int main(){
 		const double coeff_ds_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), ds_dalpha_coeff.begin(), 0.0) ;
 	
 		double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
+                nabla_energy[0] = denergy_dalpha ;
 	
 		printf("Energy: %f\n", energy);
-		printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)+denergy_dalpha*denergy_dalpha)) ;
+		printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0))) ;
+
+		// Use container for parameters to optimize (weight of unperturbed function is always 1)
+		coefficients[0] = alpha ;
+                printf("Norm parameters: %f\n", sqrt(inner_product(coefficients.begin(), coefficients.end(), coefficients.begin(), 0.0))) ;
+
+		// Determine Gamma
+		if (iter > 1) {
+			vector_add(-1.0, gradient_old, 1.0, nabla_energy) ;
+			const double inv_norm2 = 1.0/inner_product(gradient_old.begin(), gradient_old.end(), gradient_old.begin(), 0.0) ;
+			printf("Norm diff gradient: %f\n", inv_norm2) ;
+			vector_add(-1.0, coefficient_old, 1.0, coefficients) ;
+			gamma = inv_norm2*inner_product(gradient_old.begin(), gradient_old.end(), coefficient_old.begin(), 0.0) ;
+		}
+		printf("gamma: %f\n", gamma) ;
+
+		vector_add(0.0, coefficient_old, 1.0, coefficients) ;
+		vector_add(1.0, coefficient_old, -gamma, nabla_energy) ;
+
+		vector_add(0.0, gradient_old, 1.0, nabla_energy) ;
+
+		alpha = coefficients[0] ;
+
+		// Use container for coefficients
+		coefficients[0] = 1.0 ;
 	
 		double tend = double(clock()) ;
 		printf("Time energy : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
