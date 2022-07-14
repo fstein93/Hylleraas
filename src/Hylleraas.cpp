@@ -107,7 +107,7 @@ void matrix_vector_prod(const double alpha, vector<double> & y, const double bet
 
 void vector_add(const double alpha, vector<double> & y, const double beta, vector<double> & x) {
   cblas_dscal((blasint) (y.size()), alpha, &y[0], 1);
-  cblas_daxpy((blasint) (y.size()), beta, &y[0], 1, &x[0], 1);
+  cblas_daxpy((blasint) (y.size()), beta, &x[0], 1, &y[0], 1);
 }
 
 void test_integrator() {
@@ -268,9 +268,11 @@ int main(){
 			gamma = inv_norm2*inner_product(gradient_old.begin(), gradient_old.end(), coefficient_old.begin(), 0.0) ;
 		}
 		printf("gamma: %f\n", gamma) ;
+                printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0))) ;
 
 		vector_add(0.0, coefficient_old, 1.0, coefficients) ;
-		vector_add(1.0, coefficient_old, -gamma, nabla_energy) ;
+		vector_add(1.0, coefficients, -gamma, nabla_energy) ;
+                printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0))) ;
 
 		vector_add(0.0, gradient_old, 1.0, nabla_energy) ;
 
