@@ -176,7 +176,7 @@ void test_integrator() {
 
 int main(){
 	// Get required parameters from user
-	const double alpha = input_d() ;
+	const double alpha0 = input_d() ;
 	const size_t Z = input_ui() ;
 	const size_t n = input_ui() ;
 	const size_t m = input_ui() ;
@@ -189,58 +189,67 @@ int main(){
 
 	test_integrator();
 
-        const integrator Integrator(alpha, n, m, k);
-	
-	// Calculate arrays
-	double tstart, tend ;
-	tstart = double(clock()) ;
-	calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
-	tend = double(clock()) ;
-	printf("Time calc_H : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
-	tstart = double(clock()) ;
-	calc_S(S, dS_dalpha, Integrator, n, m, k) ;
-	tend = double(clock()) ;
-	printf("Time calc_S : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
-	
 	vector<double> coefficients(dim) ;
 	
 	coefficients[0] = 1.0 ;
-	
-	tstart = double(clock()) ;
-	
-	vector<double> h_coeff(dim) ;
-	matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
-	
-	vector<double> s_coeff(dim) ;
-	matrix_vector_prod(0.0, s_coeff, 1.0, S, coefficients);
-	
-	const double coeff_h_coeff = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
-	const double coeff_s_coeff = inner_product(coefficients.begin(), coefficients.end(), s_coeff.begin(), 0.0) ;
-	const double inv_norm = 1.0/coeff_s_coeff ;
-	
-	const double energy = coeff_h_coeff/coeff_s_coeff ;
 
-	vector<double> nabla_energy(dim) ;
-	vector_add(0.0, nabla_energy, 1.0, h_coeff);
-	vector_add(1.0, nabla_energy, -energy, s_coeff);
-	vector_add(2.0*inv_norm, nabla_energy, 0.0, h_coeff);
+	size_t num_iter = 10 ;
+	double alpha = alpha0 ;
+
+	for (size_t iter = 1 ; iter <= num_iter ; iter++) {
+
+                double tstart = double(clock()) ;
+
+                printf("\nIteration %lu\n", iter) ;
+
+	        const integrator Integrator(alpha, n, m, k);
+
+        	// Calculate arrays
+	        double tstart2, tend2 ;
+        	tstart2 = double(clock()) ;
+	        calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
+        	tend2 = double(clock()) ;
+	        printf("Time calc_H : %f\n", (tend2-tstart2)/CLOCKS_PER_SEC);
+        	tstart2 = double(clock()) ;
+	        calc_S(S, dS_dalpha, Integrator, n, m, k) ;
+        	tend2 = double(clock()) ;
+	        printf("Time calc_S : %f\n", (tend2-tstart2)/CLOCKS_PER_SEC);
+
+		vector<double> h_coeff(dim) ;
+		matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
 	
-	vector<double> dh_dalpha_coeff(dim) ;
-	matrix_vector_prod(0.0, dh_dalpha_coeff, 1.0, dH_dalpha, coefficients);
+		vector<double> s_coeff(dim) ;
+		matrix_vector_prod(0.0, s_coeff, 1.0, S, coefficients);
 	
-	vector<double> ds_dalpha_coeff(dim) ;
-	matrix_vector_prod(0.0, ds_dalpha_coeff, 1.0, dS_dalpha, coefficients);
+		const double coeff_h_coeff = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+		const double coeff_s_coeff = inner_product(coefficients.begin(), coefficients.end(), s_coeff.begin(), 0.0) ;
+		const double inv_norm = 1.0/coeff_s_coeff ;
 	
-	const double coeff_dh_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), dh_dalpha_coeff.begin(), 0.0) ;
-	const double coeff_ds_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), ds_dalpha_coeff.begin(), 0.0) ;
+		const double energy = coeff_h_coeff/coeff_s_coeff ;
+
+		vector<double> nabla_energy(dim) ;
+		vector_add(0.0, nabla_energy, 1.0, h_coeff);
+		vector_add(1.0, nabla_energy, -energy, s_coeff);
+		vector_add(2.0*inv_norm, nabla_energy, 0.0, h_coeff);
 	
-	double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
+		vector<double> dh_dalpha_coeff(dim) ;
+		matrix_vector_prod(0.0, dh_dalpha_coeff, 1.0, dH_dalpha, coefficients);
 	
-	printf("Energy: %f\n", energy);
-	printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)+denergy_dalpha*denergy_dalpha)) ;
+		vector<double> ds_dalpha_coeff(dim) ;
+		matrix_vector_prod(0.0, ds_dalpha_coeff, 1.0, dS_dalpha, coefficients);
 	
-	tend = double(clock()) ;
-	printf("Time energy : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
+		const double coeff_dh_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), dh_dalpha_coeff.begin(), 0.0) ;
+		const double coeff_ds_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), ds_dalpha_coeff.begin(), 0.0) ;
+	
+		double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
+	
+		printf("Energy: %f\n", energy);
+		printf("Norm gradient: %f\n", sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)+denergy_dalpha*denergy_dalpha)) ;
+	
+		double tend = double(clock()) ;
+		printf("Time energy : %f\n", (tend-tstart)/CLOCKS_PER_SEC);
+
+	}
 	
 	return 0;
 }
