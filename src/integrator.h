@@ -63,8 +63,8 @@ class integrator {
 		        +((m2>0) ? ((double) m2)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n1>0) ? ((double) n1)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0)
 		        +((m1>0 && k2>0) ? -((double) m1)*((double) k2)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) // d/dt*d/du
 		        +((m2>0 && k1>0) ? -((double) m2)*((double) k1)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) : 
-			(k2>0 ? alpha*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0) : 0)
-                        +(k1>0 ? alpha*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0) : 0) );
+			(k2>0 ? ((double) k2)*(alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0)) : 0)
+                        +(k1>0 ? ((double) k1)*(alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0)) : 0) );
 		}
 
 		double fac_dalpha_kinetic(const size_t n, const size_t m, const size_t k) const {
