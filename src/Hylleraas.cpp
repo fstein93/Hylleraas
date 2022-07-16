@@ -118,57 +118,42 @@ void print_vector(const vector<double>& a) {
 }
 
 void test_integrator() {
-	constexpr double alpha1 = 0.5 ;
-	const integrator Integrator1(alpha1, 3, 3, 3);
-
-        constexpr double factorials[] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0, 39916800.0, 479001600.0} ;
+	constexpr size_t size_array = 2 ;
+	constexpr double alpha[2] = {0.5, 1.0} ;
+	constexpr size_t size_factorials = 13 ;
+	constexpr double factorials[size_factorials] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0, 39916800.0, 479001600.0} ;
 
 	double error_exp_integral = 0.0 ;
-        for (size_t i = 0 ; i < 13 ; i++) {
-		error_exp_integral += abs(Integrator1.exp_integral(i)/factorials[i]-1.0) ;
-	}
-
-        double error_kinetic = 0.0 ;
-        error_kinetic += abs(Integrator1.integral_kinetic(0, 0, 0, 0, 0, 0)*pow(alpha1, 4)-1.0) ;
-	error_kinetic += abs(Integrator1.integral_kinetic(0, 0, 0, 0, 1, 0)*pow(alpha1, 5)*(16.0/25.0)-1.0) ;
-        error_kinetic += abs(Integrator1.integral_kinetic(0, 1, 0, 0, 1, 0)*pow(alpha1, 6)/4.0-1.0) ;
-
+	double error_kinetic = 0.0 ;
         double error_nuclear = 0.0 ;
-        error_nuclear += abs(0.5*Integrator1.integral_nuclear(0, 0, 0)*pow(alpha1, 5)-1.0) ;
-        error_nuclear += abs(Integrator1.integral_nuclear(0, 1, 0)*pow(alpha1, 6)*(4.0/15.0)-1.0) ;
-        error_nuclear += abs(Integrator1.integral_nuclear(0, 2, 0)*pow(alpha1, 7)/9.0-1.0) ;
-
         double error_repulsion = 0.0 ;
-        error_repulsion += abs(1.6*Integrator1.integral_repulsion(0, 0, 0)*pow(alpha1, 5)-1.0) ;
-        error_repulsion += abs(Integrator1.integral_repulsion(0, 1, 0)*pow(alpha1, 6)-1.0) ;
-        error_repulsion += abs(Integrator1.integral_repulsion(0, 2, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
-
         double error_overlap = 0.0 ;
-        error_overlap += abs(Integrator1.integral_overlap(0, 0, 0)*pow(alpha1, 6)-1.0) ;
-        error_overlap += abs(Integrator1.integral_overlap(0, 1, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
-        error_overlap += abs(Integrator1.integral_overlap(0, 2, 0)*pow(alpha1, 8)/6.0-1.0) ;
 
-	constexpr double alpha2 = 1.0 ;
-        const integrator Integrator2(alpha2, 3, 3, 3);
+	for (size_t i = 0 ; i < size_array ; i++) {
+		const double& alpha1 = alpha[i] ;
+		const integrator Integrator(alpha1, 3, 3, 3);
 
-        constexpr double factorials2[] = {0.5, 0.25, 0.25, 0.375, 0.75, 1.875, 5.625, 19.6875, 78.75, 354.375, 1771.875, 9745.3125, 58471.875} ;
+        	for (size_t j = 0 ; j < size_factorials ; j++) {
+			error_exp_integral += abs(Integrator.exp_integral(j)*pow(2.0*alpha1, j+1)/factorials[j]-1.0) ;
+		}
 
-        for (size_t i = 0 ; i < 13 ; i++) {
-                error_exp_integral += abs(Integrator2.exp_integral(i)/factorials2[i]-1.0) ;
-        }
+	        error_kinetic += abs(Integrator.integral_kinetic(0, 0, 0, 0, 0, 0)*pow(alpha1, 4)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(0, 0, 0, 0, 1, 0)*pow(alpha1, 5)*(16.0/25.0)-1.0) ;
+	        error_kinetic += abs(Integrator.integral_kinetic(0, 1, 0, 0, 1, 0)*pow(alpha1, 6)/4.0-1.0) ;
 
-        error_kinetic += abs(Integrator2.integral_kinetic(0, 0, 0, 0, 0, 0)*pow(alpha2, 4)-1.0) ;
-        error_kinetic += abs(Integrator2.integral_kinetic(0, 0, 0, 0, 1, 0)*pow(alpha2, 5)*(16.0/25.0)-1.0) ;
-        error_kinetic += abs(Integrator2.integral_kinetic(0, 1, 0, 0, 1, 0)*pow(alpha2, 6)/4.0-1.0) ;
-        error_nuclear += abs(0.5*Integrator2.integral_nuclear(0, 0, 0)*pow(alpha2, 5)-1.0) ;
-        error_nuclear += abs(Integrator2.integral_nuclear(0, 1, 0)*pow(alpha2, 6)*(4.0/15.0)-1.0) ;
-        error_nuclear += abs(Integrator2.integral_nuclear(0, 2, 0)*pow(alpha2, 7)/9.0-1.0) ;
-        error_repulsion += abs(1.6*Integrator2.integral_repulsion(0, 0, 0)*pow(alpha2, 5)-1.0) ;
-        error_repulsion += abs(Integrator2.integral_repulsion(0, 1, 0)*pow(alpha2, 6)-1.0) ;
-        error_repulsion += abs(Integrator2.integral_repulsion(0, 2, 0)*pow(alpha2, 7)*(16.0/35.0)-1.0) ;
-        error_overlap += abs(Integrator2.integral_overlap(0, 0, 0)*pow(alpha2, 6)-1.0) ;
-	error_overlap += abs(Integrator2.integral_overlap(0, 1, 0)*pow(alpha2, 7)*(16.0/35.0)-1.0) ;
-	error_overlap += abs(Integrator2.integral_overlap(0, 2, 0)*pow(alpha2, 8)/6.0-1.0) ;
+	        error_nuclear += abs(Integrator.integral_nuclear(0, 0, 0)*0.5*pow(alpha1, 5)-1.0) ;
+        	error_nuclear += abs(Integrator.integral_nuclear(0, 1, 0)*pow(alpha1, 6)*(4.0/15.0)-1.0) ;
+	        error_nuclear += abs(Integrator.integral_nuclear(0, 2, 0)*pow(alpha1, 7)/9.0-1.0) ;
+
+	        error_repulsion += abs(Integrator.integral_repulsion(0, 0, 0)*1.6*pow(alpha1, 5)-1.0) ;
+        	error_repulsion += abs(Integrator.integral_repulsion(0, 1, 0)*pow(alpha1, 6)-1.0) ;
+	        error_repulsion += abs(Integrator.integral_repulsion(0, 2, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
+
+	        error_overlap += abs(Integrator.integral_overlap(0, 0, 0)*pow(alpha1, 6)-1.0) ;
+        	error_overlap += abs(Integrator.integral_overlap(0, 1, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
+	        error_overlap += abs(Integrator.integral_overlap(0, 2, 0)*pow(alpha1, 8)/6.0-1.0) ;
+
+	}
 
 	cout << "Error exp_integral " << error_exp_integral << endl ;
 
