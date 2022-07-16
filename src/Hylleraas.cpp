@@ -88,7 +88,7 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator & Int
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
 				for (size_t n2 = n1 ; n2 <= n ; n2++) {
 					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
 							const double element = Integrator.integral_overlap(n1+n2, m1+m2, k1+k2) ;
 							S[idx] += element ;
 							dS_dalpha[idx] = fma(Integrator.fac_dalpha_overlap(n1+n2, m1+m2, k1+k2), element, dS_dalpha[idx]) ;
