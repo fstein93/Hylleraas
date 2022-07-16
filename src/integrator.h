@@ -19,26 +19,26 @@ class integrator {
 			return basic_integrals[n] ;
 		}
 		double integral_st(const size_t n, const size_t m, const size_t k) const {
-			return (k%2==0 ? 4.0*((double) (2*k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0) ;
+			return (k%2==0 ? 4.0*((double) (2*k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0) ;
 		}
 		double fac_dintegral_st(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (k+m+n+5))/alpha ;
 		}
 		double integral_ut(const size_t n, const size_t m, const size_t k) const {
-			return (k%2==0 ? 4.0/(((double) (k+1))*((double) (k+3))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0) ;
+			return (k%2==0 ? 4.0/(((double) (k+1))*((double) (k+3))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0) ;
 		}
 		double fac_dintegral_ut(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (k+m+n+5))/alpha ;
 		}
 		double integral_su(const size_t n, const size_t m, const size_t k) const {
-			return (k%2==0 ? -4.0/(((double) (k+1))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0) ;
+			return (k%2==0 ? -4.0/(((double) (k+1))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0) ;
 		}
 		double fac_dintegral_su(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (k+m+n+5))/alpha ;
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2 == 0 ? 4.0*((double) (k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0);
+                        return (k%2 == 0 ? 4.0*((double) (k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0.0);
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {
@@ -46,7 +46,7 @@ class integrator {
 		}
 
 		double integral_nuclear(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2 == 0 ? 8.0/(((double) (k+1))*((double) (k+m+3)))*exp_integral(k+m+n+4) : 0);
+                        return (k%2 == 0 ? 8.0/(((double) (k+1))*((double) (k+m+3)))*exp_integral(k+m+n+4) : 0.0);
 		}
 
 		double fac_dalpha_nuclear(const size_t n, const size_t m, const size_t k) const {
@@ -63,8 +63,8 @@ class integrator {
 		        +((m2>0) ? ((double) m2)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n1>0) ? ((double) n1)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0)
 		        +((m1>0 && k2>0) ? -((double) m1)*((double) k2)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) // d/dt*d/du
 		        +((m2>0 && k1>0) ? -((double) m2)*((double) k1)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) : 
-			(k2>0 ? ((double) k2)*(alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0)) : 0)
-                        +(k1>0 ? ((double) k1)*(alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0)) : 0) );
+			(k2>0 ? ((double) k2)*(alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0.0)) : 0.0)
+                        +(k1>0 ? ((double) k1)*(alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0.0)) : 0.0) );
 		}
 
 		double fac_dalpha_kinetic(const size_t n, const size_t m, const size_t k) const {
@@ -72,7 +72,7 @@ class integrator {
 		}
 
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2==0 ? 4.0*((double) (k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0);
+                        return (k%2==0 ? 4.0*((double) (k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0);
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {

@@ -241,8 +241,8 @@ int main(){
 		const double energy = coeff_h_coeff*inv_norm ;
 
 		vector<double> nabla_energy(dim) ;
-		vector_add(0.0, nabla_energy, 1.0, h_coeff);
-		vector_add(2.0*inv_norm, nabla_energy, -2.0*energy*inv_norm, s_coeff);
+		vector_add(0.0, nabla_energy, 2.0*inv_norm, h_coeff);
+		vector_add(1.0, nabla_energy, -2.0*energy*inv_norm, s_coeff);
 	
 		vector<double> dh_dalpha_coeff(dim) ;
 		matrix_vector_prod(0.0, dh_dalpha_coeff, 1.0, dH_dalpha, coefficients);
@@ -281,7 +281,7 @@ int main(){
 	
 		double tend = double(clock()) ;
 
-                printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, 1.0/inv_norm, norm_gradient, energy) ;
+                printf("%lu %f %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, denergy_dalpha, 1.0/inv_norm, norm_gradient, energy) ;
 
 
 	}
