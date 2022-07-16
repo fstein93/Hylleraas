@@ -200,7 +200,7 @@ int main(){
 	
 	coefficients[0] = 1.0 ;
 
-	size_t num_iter = 1 ;
+	size_t num_iter = 10 ;
 	double alpha = alpha0 ;
 	double gamma = gamma0 ;
 
@@ -208,11 +208,12 @@ int main(){
 	gradient_old[0] = alpha ;
 	vector<double> coefficient_old(dim) ;
 
+	double t_H = 0.0 ;
+	double t_S = 0.0 ;
+
 	for (size_t iter = 1 ; iter <= num_iter ; iter++) {
 
                 double tstart = double(clock()) ;
-
-                printf("\nIteration %lu\n", iter) ;
 
 	        const integrator Integrator(alpha, n, m, k);
 
@@ -221,11 +222,11 @@ int main(){
         	tstart2 = double(clock()) ;
 	        calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
         	tend2 = double(clock()) ;
-	        printf("Time calc_H : %f\n", (tend2-tstart2)/CLOCKS_PER_SEC);
+		t_H += (tend2-tstart2)/CLOCKS_PER_SEC ;
         	tstart2 = double(clock()) ;
 	        calc_S(S, dS_dalpha, Integrator, n, m, k) ;
         	tend2 = double(clock()) ;
-	        printf("Time calc_S : %f\n", (tend2-tstart2)/CLOCKS_PER_SEC);
+		t_S += (tend2-tstart2)/CLOCKS_PER_SEC ;
 
 		vector<double> h_coeff(dim) ;
 		matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
@@ -252,11 +253,9 @@ int main(){
 		const double coeff_dh_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), dh_dalpha_coeff.begin(), 0.0) ;
 		const double coeff_ds_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), ds_dalpha_coeff.begin(), 0.0) ;
 	
-		double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
+		const double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
                 nabla_energy[0] = denergy_dalpha ;
 
-		//print_vector(nabla_energy) ;
-	
 		const double norm_gradient = sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)) ;
 
 		// Use container for parameters to optimize (weight of unperturbed function is always 1)
@@ -273,8 +272,6 @@ int main(){
 		vector_add(0.0, coefficient_old, 1.0, coefficients) ;
 		vector_add(1.0, coefficients, -gamma, nabla_energy) ;
 
-		//print_vector(coefficients) ;
-
 		vector_add(0.0, gradient_old, 1.0, nabla_energy) ;
 
 		alpha = coefficients[0] ;
@@ -288,6 +285,9 @@ int main(){
 
 
 	}
+
+        printf("Time calc_H : %f\n", t_H) ;
+        printf("Time calc_S : %f\n", t_S) ;
 	
 	return 0;
 }
