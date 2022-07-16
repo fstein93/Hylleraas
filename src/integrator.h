@@ -44,48 +44,50 @@ class integrator {
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return 4.0*((double) (4*k+m+6))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+3))*((double) (2*k+m+5)))*exp_integral(2*k+m+n+5);
+                        return (k%2 == 0 ? 4.0*((double) (2*k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0);
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return -((double) (2*k+m+n+6))/alpha ;
+                        return -((double) (k+m+n+6))/alpha ;
 		}
 
 		double integral_nuclear(const size_t n, const size_t m, const size_t k) const {
-                        return 8.0/(((double) (2*k+1))*((double) (2*k+m+3)))*exp_integral(2*k+m+n+4);
+                        return (k%2 == 0 ? 8.0/(((double) (k+1))*((double) (k+m+3)))*exp_integral(k+m+n+4) : 0);
 		}
 
 		double fac_dalpha_nuclear(const size_t n, const size_t m, const size_t k) const {
-                        return -((double) (2*k+m+n+5))/alpha ;
+                        return (k%2 == 0 ? -((double) (k+m+n+5))/alpha : 0) ;
 		}
 
 		double integral_kinetic(const size_t n1, const size_t m1, const size_t k1, const size_t n2, const size_t m2, const size_t k2) const {
-		        return alpha*alpha*integral_st(n1+n2, m1+m2+1, k1+k2) // d2/ds2 (1)
+		        return ((k1+k2)%2 == 0 ? alpha*alpha*integral_st(n1+n2, m1+m2+1, k1+k2) // d2/ds2 (1)
 		        +(n1+n2>0 ? -alpha*((double) (n1+n2))*integral_st(n1+n2-1, m1+m2+1, k1+k2) : 0.0) // d2/ds2 (2)
 		        +((n1>0 && n2>0) ? ((double) n1)*((double) n2)*integral_st(n1+n2-2, m1+m2+1, k1+k2) : 0.0) // d2/ds2 (3)
-		        +((k1>0 && k2>0) ? 4.0*((double) k1)*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1) : 0.0) // d2/dt2
+		        +((k1>0 && k2>0) ? ((double) k1)*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1) : 0.0) // d2/dt2
 		        +((m1>0 && m2>0) ? ((double) m1)*((double) m2)*integral_st(n1+n2, m1+m2-1, k1+k2) : 0.0) // d2/du2
-		        +0.5*((m1>0) ? ((double) m1)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n2>0) ? ((double) n2)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0) // d/ds*d/du
-		        +0.5*((m2>0) ? ((double) m2)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n1>0) ? ((double) n1)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0)
-		        +0.5*((m1>0 && k2>0) ? -2.0*((double) m1)*((double) k2)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) // d/dt*d/du
-		        +0.5*((m2>0 && k1>0) ? -2.0*((double) m2)*((double) k1)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0);
+		        +((m1>0) ? ((double) m1)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n2>0) ? ((double) n2)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0) // d/ds*d/du
+		        +((m2>0) ? ((double) m2)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n1>0) ? ((double) n1)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0)
+		        +((m1>0 && k2>0) ? -((double) m1)*((double) k2)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) // d/dt*d/du
+		        +((m2>0 && k1>0) ? -((double) m2)*((double) k1)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) : 
+			2.0*alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2, k1+k2-1) : 0) 
+                        +(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2, k1+k2-1) : 0) );
 		}
 
 		double fac_dalpha_kinetic(const size_t n, const size_t m, const size_t k) const {
-                        return -((double) (2*k+m+n+4))/alpha ;
+                        return -((double) (k+m+n+4))/alpha ;
 		}
 
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+                        return (k%2==0 ? 4.0*((double) (k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0);
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return -((double) (2*k+m+n+5))/alpha ;
+                        return (k%2 == 0 ? -((double) (k+m+n+5))/alpha : 0) ;
 		}
 	private:
 		double* basic_integrals = NULL ;
 		size_t size_basic_integrals = 0 ;
-		double alpha ;
+		double alpha = 0.0 ;
 };
 
 #endif
