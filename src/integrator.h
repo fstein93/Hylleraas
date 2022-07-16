@@ -6,10 +6,10 @@ class integrator {
 		integrator(const double alpha_, const size_t n, const size_t m, const size_t k) {
                         alpha = alpha_;
 			if (basic_integrals != NULL) delete basic_integrals ;
-			size_basic_integrals = n+m+2*k+7 ;
-			basic_integrals = new double[n+m+2*k+6] ;
+			size_basic_integrals = 2*(n+m+k)+7 ;
+			basic_integrals = new double[size_basic_integrals] ;
 			basic_integrals[0] = 0.5/alpha;
-			for (size_t i = 1 ; i < n+m+2*k+6 ; i++ ) {
+			for (size_t i = 1 ; i < size_basic_integrals ; i++ ) {
 				basic_integrals[i] = ((double) i)*(0.5/alpha)*basic_integrals[i-1];
 			}
 		}
@@ -18,33 +18,27 @@ class integrator {
 			if (n >= size_basic_integrals) return 0.0 ;
 			return basic_integrals[n] ;
 		}
-		double integral_plain(const size_t n, const size_t m, const size_t k) const {
-			return 2.0/(((double) (2*k+1))*((double) (2*k+m+2)))*basic_integrals[2*k+m+n+2];
-		}
-		double fac_dintegral_plain(const size_t n, const size_t m, const size_t k) const {
-			return -((double) (2*k+m+n+3))/alpha ;
-		}
 		double integral_st(const size_t n, const size_t m, const size_t k) const {
-			return 4.0*((double) (4*k+m+5))/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return (k%2==0 ? 4.0*((double) (2*k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0) ;
 		}
 		double fac_dintegral_st(const size_t n, const size_t m, const size_t k) const {
-			return -((double) (2*k+m+n+5))/alpha ;
+			return -((double) (k+m+n+5))/alpha ;
 		}
 		double integral_ut(const size_t n, const size_t m, const size_t k) const {
-			return 4.0/(((double) (2*k+1))*((double) (2*k+3))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return (k%2==0 ? 4.0/(((double) (k+1))*((double) (k+3))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0) ;
 		}
 		double fac_dintegral_ut(const size_t n, const size_t m, const size_t k) const {
-			return -((double) (2*k+m+n+5))/alpha ;
+			return -((double) (k+m+n+5))/alpha ;
 		}
 		double integral_su(const size_t n, const size_t m, const size_t k) const {
-			return -4.0/(((double) (2*k+1))*((double) (2*k+m+2))*((double) (2*k+m+4)))*exp_integral(2*k+m+n+4);
+			return (k%2==0 ? -4.0/(((double) (k+1))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0) ;
 		}
 		double fac_dintegral_su(const size_t n, const size_t m, const size_t k) const {
-			return -((double) (2*k+m+n+5))/alpha ;
+			return -((double) (k+m+n+5))/alpha ;
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2 == 0 ? 4.0*((double) (2*k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0);
+                        return (k%2 == 0 ? 4.0*((double) (k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0);
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {
@@ -63,14 +57,14 @@ class integrator {
 		        return ((k1+k2)%2 == 0 ? alpha*alpha*integral_st(n1+n2, m1+m2+1, k1+k2) // d2/ds2 (1)
 		        +(n1+n2>0 ? -alpha*((double) (n1+n2))*integral_st(n1+n2-1, m1+m2+1, k1+k2) : 0.0) // d2/ds2 (2)
 		        +((n1>0 && n2>0) ? ((double) n1)*((double) n2)*integral_st(n1+n2-2, m1+m2+1, k1+k2) : 0.0) // d2/ds2 (3)
-		        +((k1>0 && k2>0) ? ((double) k1)*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1) : 0.0) // d2/dt2
+		        +((k1>0 && k2>0) ? ((double) k1)*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-2) : 0.0) // d2/dt2
 		        +((m1>0 && m2>0) ? ((double) m1)*((double) m2)*integral_st(n1+n2, m1+m2-1, k1+k2) : 0.0) // d2/du2
 		        +((m1>0) ? ((double) m1)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n2>0) ? ((double) n2)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0) // d/ds*d/du
 		        +((m2>0) ? ((double) m2)*(-alpha*integral_ut(n1+n2+1, m1+m2-1, k1+k2)+((n1>0) ? ((double) n1)*integral_ut(n1+n2, m1+m2-1, k1+k2) : 0.0)) : 0.0)
 		        +((m1>0 && k2>0) ? -((double) m1)*((double) k2)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) // d/dt*d/du
 		        +((m2>0 && k1>0) ? -((double) m2)*((double) k1)*integral_su(n1+n2, m1+m2-1, k1+k2) : 0.0) : 
-			2.0*alpha*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2, k1+k2-1) : 0) 
-                        +(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2, k1+k2-1) : 0) );
+			(k2>0 ? alpha*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n1>0 ? -((double) n1)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0) : 0)
+                        +(k1>0 ? alpha*((double) k2)*integral_st(n1+n2, m1+m2+1, k1+k2-1)+(n2>0 ? -((double) n2)*integral_st(n1+n2-1, m1+m2+1, k1+k2-1) : 0) : 0) );
 		}
 
 		double fac_dalpha_kinetic(const size_t n, const size_t m, const size_t k) const {
