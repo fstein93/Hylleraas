@@ -257,7 +257,7 @@ int main(){
 		double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
                 nabla_energy[0] = denergy_dalpha ;
 
-		print_vector(nabla_energy) ;
+		//print_vector(nabla_energy) ;
 	
 		const double norm_gradient = sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)) ;
 
@@ -275,7 +275,7 @@ int main(){
 		vector_add(0.0, coefficient_old, 1.0, coefficients) ;
 		vector_add(1.0, coefficients, -gamma, nabla_energy) ;
 
-		print_vector(coefficients) ;
+		//print_vector(coefficients) ;
 
 		vector_add(0.0, gradient_old, 1.0, nabla_energy) ;
 
