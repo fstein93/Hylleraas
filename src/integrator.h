@@ -50,7 +50,7 @@ class integrator {
 		}
 
 		double fac_dalpha_nuclear(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2 == 0 ? -((double) (k+m+n+5))/alpha : 0) ;
+                        return -((double) (k+m+n+5))/alpha ;
 		}
 
 		double integral_kinetic(const size_t n1, const size_t m1, const size_t k1, const size_t n2, const size_t m2, const size_t k2) const {
@@ -76,7 +76,7 @@ class integrator {
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2 == 0 ? -((double) (k+m+n+5))/alpha : 0) ;
+                        return -((double) (k+m+n+5))/alpha ;
 		}
 	private:
 		double* basic_integrals = NULL ;
