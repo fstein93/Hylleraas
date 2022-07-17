@@ -29,12 +29,14 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = n1 ; n2 <= n ; n2++) {
-					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
-						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
-							const double element = Integrator.integral_kinetic(n1, m1, k1, n2, m2, k2) ;
-							H[idx] += element ;
-							dH_dalpha[idx] = fma(Integrator.fac_dalpha_kinetic(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+				for (size_t n2 = 0 ; n2 <= n ; n2++) {
+					for (size_t m2 = 0 ; m2 <= m ; m2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
+								const double element = Integrator.integral_kinetic(n1, m1, k1, n2, m2, k2) ;
+								H[idx] = element ;
+								dH_dalpha[idx] = fma(Integrator.fac_dalpha_kinetic(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							}
 							idx++ ;
 						}
 					}
@@ -48,12 +50,14 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = n1 ; n2 <= n ; n2++) {
-					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
-						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
-							const double element = -Z_double*Integrator.integral_nuclear(n1+n2, m1+m2, k1+k2) ;
-							H[idx] += element ;
-							dH_dalpha[idx] = fma(Integrator.fac_dalpha_nuclear(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+				for (size_t n2 = 0 ; n2 <= n ; n2++) {
+					for (size_t m2 = 0 ; m2 <= m ; m2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
+								const double element = -Z_double*Integrator.integral_nuclear(n1+n2, m1+m2, k1+k2) ;
+								H[idx] += element ;
+								dH_dalpha[idx] = fma(Integrator.fac_dalpha_nuclear(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							}
 							idx++ ;
 						}
 					}
@@ -66,12 +70,14 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = n1 ; n2 <= n ; n2++) {
-					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
-						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
-							const double element = Integrator.integral_repulsion(n1+n2, m1+m2, k1+k2) ;
-							H[idx] += element ;
-							dH_dalpha[idx] = fma(Integrator.fac_dalpha_repulsion(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+				for (size_t n2 = 0 ; n2 <= n ; n2++) {
+					for (size_t m2 = 0 ; m2 <= m ; m2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
+								const double element = Integrator.integral_repulsion(n1+n2, m1+m2, k1+k2) ;
+								H[idx] += element ;
+								dH_dalpha[idx] = fma(Integrator.fac_dalpha_repulsion(n1+n2, m1+m2, k1+k2), element, dH_dalpha[idx]) ;
+							}
 							idx++ ;
 						}
 					}
@@ -86,12 +92,14 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator & Int
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
 			for (size_t k1 = 0 ; k1 <= k ; k1++) {
-				for (size_t n2 = n1 ; n2 <= n ; n2++) {
-					for (size_t m2 = (n1>n2 ? 0 : m1) ; m2 <= m ; m2++) {
-						for (size_t k2 = ((n1 > n2 || m1 > m2) ? 0 : k1) ; k2 <= k ; k2++) {
-							const double element = Integrator.integral_overlap(n1+n2, m1+m2, k1+k2) ;
-							S[idx] += element ;
-							dS_dalpha[idx] = fma(Integrator.fac_dalpha_overlap(n1+n2, m1+m2, k1+k2), element, dS_dalpha[idx]) ;
+				for (size_t n2 = 0 ; n2 <= n ; n2++) {
+					for (size_t m2 = 0 ; m2 <= m ; m2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
+								const double element = Integrator.integral_overlap(n1+n2, m1+m2, k1+k2) ;
+								S[idx] = element ;
+								dS_dalpha[idx] = fma(Integrator.fac_dalpha_overlap(n1+n2, m1+m2, k1+k2), element, dS_dalpha[idx]) ;
+							}
 							idx++ ;
 						}
 					}
@@ -105,7 +113,7 @@ void matrix_vector_prod(const double alpha, vector<double> & y, const double bet
   cblas_dsymv(CblasRowMajor, CblasUpper, (blasint) (y.size()), beta, &A[0], (blasint) (x.size()), &x[0], 1, alpha, &y[0], 1);
 }
 
-void vector_add(const double alpha, vector<double> & y, const double beta, vector<double> & x) {
+void vector_add(const double alpha, vector<double> & y, const double beta, const vector<double> & x) {
   cblas_dscal((blasint) (y.size()), alpha, &y[0], 1);
   cblas_daxpy((blasint) (y.size()), beta, &x[0], 1, &y[0], 1);
 }
@@ -179,6 +187,31 @@ void test_integrator() {
         cout << "Error overlap " << error_overlap << endl ;
 }
 
+void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, const vector<double>& coefficients, double& energy, vector<double>& nabla_energy) {
+	const size_t dim = (n+1)*(m+1)*(k+1) ;
+	const size_t dim2 = dim*dim ;
+        
+	const integrator Integrator(alpha, n, m, k);
+                
+	// Calculate arrays
+	vector<double> H(dim2), dH_dalpha(dim2), h_coeff(dim), dS_dalpha(dim2) ;
+	calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
+	matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients) ;
+	energy = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+	vector_add(0.0, nabla_energy, 1.0, h_coeff) ;
+
+	calc_S(H, dS_dalpha, Integrator, n, m, k) ;
+	matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
+	const double inv_norm = 1.0/inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+	energy *= inv_norm ;
+	vector_add(inv_norm, nabla_energy, -energy*inv_norm, h_coeff) ;
+
+	matrix_vector_prod(0.0, h_coeff, inv_norm, dH_dalpha, coefficients) ;
+	nabla_energy[0] = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+	matrix_vector_prod(0.0, h_coeff, -energy*inv_norm, dS_dalpha, coefficients) ;
+	nabla_energy[0] -= energy*inv_norm*inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+}
+
 int main(){
 	// Get required parameters from user
 	const double alpha0 = input_d() ;
@@ -210,6 +243,14 @@ int main(){
 
 	double t_H = 0.0 ;
 	double t_S = 0.0 ;
+
+	// Parameters of Wolfe condition
+	const bool do_wolfe = true ;
+	const double c1 = 0.0001 ;
+	const double c2 = 0.9 ;
+	const double rho0 = 0.1 ;
+
+	printf("iter time gamma alpha norm grad energy\n") ;
 
 	for (size_t iter = 1 ; iter <= num_iter ; iter++) {
 
@@ -252,21 +293,47 @@ int main(){
 	
 		const double coeff_dh_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), dh_dalpha_coeff.begin(), 0.0) ;
 		const double coeff_ds_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), ds_dalpha_coeff.begin(), 0.0) ;
-	
+		//printf("dalpha %f %f\n", coeff_dh_dalpha_coeff, coeff_ds_dalpha_coeff) ;
+
 		const double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
                 nabla_energy[0] = denergy_dalpha ;
 
-		const double norm_gradient = sqrt(inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0)) ;
+		const double gradient_2 = inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0) ;
+		const double norm_gradient = sqrt(gradient_2) ;
+
+		//printf("nabla_energy ") ;
+		//print_vector(nabla_energy) ;
 
 		// Use container for parameters to optimize (weight of unperturbed function is always 1)
 		coefficients[0] = alpha ;
 
 		// Determine Gamma
-		if (iter > 1) {
+		if (iter > 1 && !do_wolfe) {
 			vector_add(-1.0, gradient_old, 1.0, nabla_energy) ;
 			const double inv_norm2 = 1.0/inner_product(gradient_old.begin(), gradient_old.end(), gradient_old.begin(), 0.0) ;
 			vector_add(-1.0, coefficient_old, 1.0, coefficients) ;
 			gamma = inv_norm2*inner_product(gradient_old.begin(), gradient_old.end(), coefficient_old.begin(), 0.0) ;
+		} else {
+			vector<double> nabla_energy2(dim), coefficients2(dim) ;
+			double energy2 ;
+			gamma = -1.0 ;
+			do {
+				if (gamma < 0.0) {
+					gamma = rho0 ;
+				} else {
+					gamma /= 2.0 ;
+				}
+				if (gamma < c1) break ;
+				vector_add(0.0, coefficients2, 1.0, coefficients) ;
+				vector_add(1.0, coefficients2, -gamma, nabla_energy) ;
+				const double alpha2 = coefficients2[0] ;
+				coefficients2[0] = 1.0 ;
+				calc_energy(alpha2, n, m, k, Z, coefficients2, energy2, nabla_energy2) ;
+				//printf("New nabla ") ;
+				//print_vector(nabla_energy2) ;
+				//printf("Wolfe: %f %f %f %f\n", gamma, alpha2, energy2, inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy2.begin(), 0.0)) ;
+			}
+			while (energy2 >= energy-c1*gamma*gradient_2 && inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy2.begin(), 0.0) >= c2*gradient_2) ;
 		}
 
 		vector_add(0.0, coefficient_old, 1.0, coefficients) ;
@@ -281,7 +348,7 @@ int main(){
 	
 		double tend = double(clock()) ;
 
-                printf("%lu %f %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, denergy_dalpha, 1.0/inv_norm, norm_gradient, energy) ;
+                printf("%lu %f %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, 1.0/inv_norm, norm_gradient, energy) ;
 
 
 	}
