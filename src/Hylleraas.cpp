@@ -11,6 +11,14 @@
 
 using namespace std ;
 
+extern "C" {
+extern void dsygvx_(int*, char*, char*, char*, int*, double*, int*, double*, int*, double*, double*, int*, int*, double*, int*, double*, double*, int*, double*, int*, int*, int*, int*) ;
+
+extern double dlamch_(char*) ;
+
+extern int ilaenv_(int*, char*, char*, int*, int*, int*, int*) ;
+}
+
 double input_d(){
 	double d ;
 	cin >> d ;
@@ -187,6 +195,38 @@ void test_integrator() {
         cout << "Error overlap " << error_overlap << endl ;
 }
 
+void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coefficients, double& energy) {
+	// Parameters for dlamch
+	char cmach = 'S' ;
+
+	// Parameters for ilaenv
+	int ispec = 1 ;
+	char name[] = "dsytrd" ;
+	char opts[] = "VIU" ;
+	int n1 = (int) coefficients.size() ;
+        int n2 = 1 ;
+        int n3 = -1 ;
+        int n4 = -1 ;
+
+	// Finally, set up dsygvx
+	int itype = 1 ;
+	char jobz = 'V' ;
+	char range = 'I' ;
+	char uplo = 'U' ;
+	double vl = 0.0 ;
+	double vu = 0.0 ;
+	int il = 1 ;
+	int iu = 1 ;
+	double abstol = 2.0*dlamch_(&cmach) ;
+	int found_evals, info ;
+	int dim = (int) coefficients.size() ;
+	int lwork = max(ilaenv_(&ispec, &name[0], &opts[0], &n1, &n2, &n3, &n4)+3, 8)*dim ;
+	vector<int> iwork(2*((size_t) dim)), ifail((size_t) dim) ;
+	vector<double> work((size_t) lwork), evals((size_t) dim) ;
+	dsygvx_(&itype, &jobz, &range, &uplo, &dim, &H[0], &dim, &S[0], &dim, &vl, &vu, &il, &iu, &abstol, &found_evals, &evals[0], &coefficients[0], &dim, &work[0], &lwork, &iwork[0], &ifail[0], &info) ;
+	energy = evals[0] ;
+}
+
 void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, const vector<double>& coefficients, double& energy, vector<double>& nabla_energy) {
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
 	const size_t dim2 = dim*dim ;
@@ -236,6 +276,8 @@ int main(){
 	size_t num_iter = 10 ;
 	double alpha = alpha0 ;
 	double gamma = gamma0 ;
+	bool converged = false ;
+	const double eps_gradient = 1.0e-5 ;
 
 	vector<double> gradient_old(dim) ;
 	gradient_old[0] = alpha ;
@@ -323,15 +365,15 @@ int main(){
 				} else {
 					gamma /= 2.0 ;
 				}
-				if (gamma < c1) break ;
+				if (gamma == 0.0) {
+					converged = true ;
+					break ;
+				}
 				vector_add(0.0, coefficients2, 1.0, coefficients) ;
 				vector_add(1.0, coefficients2, -gamma, nabla_energy) ;
 				const double alpha2 = coefficients2[0] ;
 				coefficients2[0] = 1.0 ;
 				calc_energy(alpha2, n, m, k, Z, coefficients2, energy2, nabla_energy2) ;
-				//printf("New nabla ") ;
-				//print_vector(nabla_energy2) ;
-				//printf("Wolfe: %f %f %f %f\n", gamma, alpha2, energy2, inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy2.begin(), 0.0)) ;
 			}
 			while (energy2 >= energy-c1*gamma*gradient_2 && inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy2.begin(), 0.0) >= c2*gradient_2) ;
 		}
@@ -350,6 +392,9 @@ int main(){
 
                 printf("%lu %f %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, 1.0/inv_norm, norm_gradient, energy) ;
 
+		if (norm_gradient < eps_gradient) converged = true ;
+
+		if (converged) break ;
 
 	}
 
