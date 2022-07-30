@@ -227,29 +227,24 @@ void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coeffi
 	energy = evals[0] ;
 }
 
-void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, const vector<double>& coefficients, double& energy, vector<double>& nabla_energy) {
+void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, vector<double>& coefficients, double& energy, double& nabla_energy) {
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
 	const size_t dim2 = dim*dim ;
         
 	const integrator Integrator(alpha, n, m, k);
                 
 	// Calculate arrays
-	vector<double> H(dim2), dH_dalpha(dim2), h_coeff(dim), dS_dalpha(dim2) ;
+	vector<double> H(dim2), dH_dalpha(dim2), h_coeff(dim), S(dim2), dS_dalpha(dim2) ;
 	calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
-	matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients) ;
-	energy = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
-	vector_add(0.0, nabla_energy, 1.0, h_coeff) ;
+        calc_S(S, dS_dalpha, Integrator, n, m, k) ;
 
-	calc_S(H, dS_dalpha, Integrator, n, m, k) ;
-	matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
-	const double inv_norm = 1.0/inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
-	energy *= inv_norm ;
-	vector_add(inv_norm, nabla_energy, -energy*inv_norm, h_coeff) ;
+	// Determine the coefficients and the energy
+	calc_first_eig(H, S, coefficients, energy) ;
 
-	matrix_vector_prod(0.0, h_coeff, inv_norm, dH_dalpha, coefficients) ;
-	nabla_energy[0] = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
-	matrix_vector_prod(0.0, h_coeff, -energy*inv_norm, dS_dalpha, coefficients) ;
-	nabla_energy[0] -= energy*inv_norm*inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+	matrix_vector_prod(0.0, h_coeff, 1.0, dH_dalpha, coefficients) ;
+	nabla_energy = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+	matrix_vector_prod(0.0, h_coeff, -energy, dS_dalpha, coefficients) ;
+	nabla_energy -= energy*inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
 }
 
 int main(){
@@ -270,8 +265,6 @@ int main(){
 	test_integrator();
 
 	vector<double> coefficients(dim) ;
-	
-	coefficients[0] = 1.0 ;
 
 	size_t num_iter = 10 ;
 	double alpha = alpha0 ;
@@ -279,9 +272,7 @@ int main(){
 	bool converged = false ;
 	const double eps_gradient = 1.0e-5 ;
 
-	vector<double> gradient_old(dim) ;
-	gradient_old[0] = alpha ;
-	vector<double> coefficient_old(dim) ;
+	double denergy_dalpha_old, alpha_old ;
 
 	double t_H = 0.0 ;
 	double t_S = 0.0 ;
@@ -311,53 +302,25 @@ int main(){
         	tend2 = double(clock()) ;
 		t_S += (tend2-tstart2)/CLOCKS_PER_SEC ;
 
-		vector<double> h_coeff(dim) ;
-		matrix_vector_prod(0.0, h_coeff, 1.0, H, coefficients);
-	
-		vector<double> s_coeff(dim) ;
-		matrix_vector_prod(0.0, s_coeff, 1.0, S, coefficients);
-	
-		const double coeff_h_coeff = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
-		const double coeff_s_coeff = inner_product(coefficients.begin(), coefficients.end(), s_coeff.begin(), 0.0) ;
-		const double inv_norm = 1.0/coeff_s_coeff ;
-	
-		const double energy = coeff_h_coeff*inv_norm ;
+                // Calculate energy and coefficients
+		double energy ;
+	        calc_first_eig(H, S, coefficients, energy) ;
 
-		vector<double> nabla_energy(dim) ;
-		vector_add(0.0, nabla_energy, 2.0*inv_norm, h_coeff);
-		vector_add(1.0, nabla_energy, -2.0*energy*inv_norm, s_coeff);
+		vector<double> work_vector(dim) ;
+		matrix_vector_prod(0.0, work_vector, 1.0, dH_dalpha, coefficients);
+		matrix_vector_prod(1.0, work_vector, -energy, dS_dalpha, coefficients);
 	
-		vector<double> dh_dalpha_coeff(dim) ;
-		matrix_vector_prod(0.0, dh_dalpha_coeff, 1.0, dH_dalpha, coefficients);
-	
-		vector<double> ds_dalpha_coeff(dim) ;
-		matrix_vector_prod(0.0, ds_dalpha_coeff, 1.0, dS_dalpha, coefficients);
-	
-		const double coeff_dh_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), dh_dalpha_coeff.begin(), 0.0) ;
-		const double coeff_ds_dalpha_coeff = inner_product(coefficients.begin(), coefficients.end(), ds_dalpha_coeff.begin(), 0.0) ;
-		//printf("dalpha %f %f\n", coeff_dh_dalpha_coeff, coeff_ds_dalpha_coeff) ;
-
-		const double denergy_dalpha = inv_norm*(coeff_dh_dalpha_coeff-energy*coeff_ds_dalpha_coeff) ;
-                nabla_energy[0] = denergy_dalpha ;
-
-		const double gradient_2 = inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy.begin(), 0.0) ;
-		const double norm_gradient = sqrt(gradient_2) ;
-
-		//printf("nabla_energy ") ;
-		//print_vector(nabla_energy) ;
-
-		// Use container for parameters to optimize (weight of unperturbed function is always 1)
-		coefficients[0] = alpha ;
+		const double denergy_dalpha = inner_product(coefficients.begin(), coefficients.end(), work_vector.begin(), 0.0) ;
 
 		// Determine Gamma
 		if (iter > 1 && !do_wolfe) {
-			vector_add(-1.0, gradient_old, 1.0, nabla_energy) ;
-			const double inv_norm2 = 1.0/inner_product(gradient_old.begin(), gradient_old.end(), gradient_old.begin(), 0.0) ;
-			vector_add(-1.0, coefficient_old, 1.0, coefficients) ;
-			gamma = inv_norm2*inner_product(gradient_old.begin(), gradient_old.end(), coefficient_old.begin(), 0.0) ;
+			denergy_dalpha_old = denergy_dalpha-denergy_dalpha_old ;
+			const double inv_norm = 1.0/abs(denergy_dalpha_old) ;
+			alpha_old = alpha-alpha_old ;
+			gamma = inv_norm*alpha_old ;
 		} else {
-			vector<double> nabla_energy2(dim), coefficients2(dim) ;
-			double energy2 ;
+			vector<double> coefficients2(dim) ;
+			double denergy_dalpha2, energy2 ;
 			gamma = -1.0 ;
 			do {
 				if (gamma < 0.0) {
@@ -369,30 +332,20 @@ int main(){
 					converged = true ;
 					break ;
 				}
-				vector_add(0.0, coefficients2, 1.0, coefficients) ;
-				vector_add(1.0, coefficients2, -gamma, nabla_energy) ;
-				const double alpha2 = coefficients2[0] ;
-				coefficients2[0] = 1.0 ;
-				calc_energy(alpha2, n, m, k, Z, coefficients2, energy2, nabla_energy2) ;
+				calc_energy(alpha-gamma*denergy_dalpha, n, m, k, Z, coefficients2, energy2, denergy_dalpha2) ;
 			}
-			while (energy2 >= energy-c1*gamma*gradient_2 && inner_product(nabla_energy.begin(), nabla_energy.end(), nabla_energy2.begin(), 0.0) >= c2*gradient_2) ;
+			while (energy2 >= energy-c1*gamma*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha) ;
 		}
 
-		vector_add(0.0, coefficient_old, 1.0, coefficients) ;
-		vector_add(1.0, coefficients, -gamma, nabla_energy) ;
+		denergy_dalpha_old = denergy_dalpha ;
+		alpha_old = alpha ;
+		alpha -= gamma*denergy_dalpha ;
 
-		vector_add(0.0, gradient_old, 1.0, nabla_energy) ;
-
-		alpha = coefficients[0] ;
-
-		// Use container for coefficients
-		coefficients[0] = 1.0 ;
-	
 		double tend = double(clock()) ;
 
-                printf("%lu %f %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, 1.0/inv_norm, norm_gradient, energy) ;
+                printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, abs(denergy_dalpha), energy) ;
 
-		if (norm_gradient < eps_gradient) converged = true ;
+		if (abs(denergy_dalpha) < eps_gradient) converged = true ;
 
 		if (converged) break ;
 
