@@ -1,0 +1,5 @@
+This project is a toy project to improve the own C++ skills.
+
+The requirements are a C++ compiler, a BLAS and a LAPACK distribution.
+
+For compilation just type 'make'.
