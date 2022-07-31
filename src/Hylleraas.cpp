@@ -210,6 +210,16 @@ void test_integrator() {
 	        error_repulsion += abs(Integrator.integral_repulsion(0, 0, 0)*1.6*pow(alpha1, 5)-1.0) ;
         	error_repulsion += abs(Integrator.integral_repulsion(0, 1, 0)*pow(alpha1, 6)-1.0) ;
 	        error_repulsion += abs(Integrator.integral_repulsion(0, 2, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
+		error_repulsion += abs(Integrator.integral_repulsion(1, 0, 3)) ;
+		error_repulsion += abs(Integrator.integral_repulsion(1, 4, 5)) ;
+		error_repulsion += abs(Integrator.integral_repulsion(6, 5, 0)*(4.0/16891875.0)*pow(alpha1, 16)-1.0) ;
+		error_repulsion += abs(Integrator.integral_repulsion(5, 4, 0)*(64.0/6081075.0)*pow(alpha1, 14)-1.0) ;
+		error_repulsion += abs(Integrator.integral_repulsion(1, 3, 4)/1080.0*pow(alpha1, 13)-1.0) ;
+		error_repulsion += abs(Integrator.integral_repulsion(0, 3, 3)) ;
+		error_repulsion += abs(Integrator.integral_repulsion(6, 2, 1)) ;
+		error_repulsion += abs(Integrator.integral_repulsion(4, 3, 4)/368550.0*pow(alpha1, 16)-1.0) ;
+		error_repulsion += abs(Integrator.integral_repulsion(3, 3, 0)/540.0*pow(alpha1, 11)-1.0) ;
+		error_repulsion += abs(Integrator.integral_repulsion(1, 5, 6)/1143450.0*pow(alpha1, 17)-1.0) ;
 
 	        error_overlap += abs(Integrator.integral_overlap(0, 0, 0)*pow(alpha1, 6)-1.0) ;
         	error_overlap += abs(Integrator.integral_overlap(0, 1, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;

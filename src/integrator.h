@@ -72,7 +72,7 @@ class integrator {
 		}
 
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2==0 ? 4.0*((double) (k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0);
+                        return (k%2==0 ? 4.0*((double) (2*k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0);
 		}
 
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {
