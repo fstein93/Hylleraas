@@ -140,8 +140,8 @@ void print_vector(const vector<double>& a) {
 }
 
 void test_integrator() {
-	constexpr size_t size_array = 2 ;
-	constexpr double alpha[2] = {0.5, 1.0} ;
+	constexpr size_t size_array = 5 ;
+	constexpr double alpha[5] = {0.5, 1.0, 2.0, 4.0, 10.0} ;
 	constexpr size_t size_factorials = 13 ;
 	constexpr double factorials[size_factorials] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0, 39916800.0, 479001600.0} ;
 
@@ -265,7 +265,8 @@ void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coeffi
 	int itype = 1 ;
 	char jobz = 'V' ;
 	char range = 'I' ;
-	char uplo = 'U' ;
+	// We have the lower half because in Fortran, we have column-major
+	char uplo = 'L' ;
 	double vl = 0.0 ;
 	double vu = 0.0 ;
 	int il = 1 ;
@@ -290,8 +291,6 @@ void calc_energy(const double alpha, const size_t n, const size_t m, const size_
 	vector<double> H(dim2), dH_dalpha(dim2), h_coeff(dim), S(dim2), dS_dalpha(dim2) ;
 	calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
         calc_S(S, dS_dalpha, Integrator, n, m, k) ;
-printf("\nH ") ;
-print_vector(H) ;
 
 	// Determine the coefficients and the energy
 	calc_first_eig(H, S, coefficients, energy) ;
@@ -310,7 +309,7 @@ int main(){
 	const size_t m = input_ui() ;
 	const size_t k = input_ui() ;
 
-	const double max_step_size = 0.5 ;
+	const double max_step_size = 1.0 ;
 	
 	// Create working arrays
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
@@ -351,7 +350,6 @@ int main(){
 
 		// Solve the Schrödinger equation for the given value of alpha
 		calc_energy(alpha, n, m, k, Z, coefficients, energy, denergy_dalpha) ;
-		print_vector(coefficients) ;
 
 		// Determine Gamma
 		if (iter > 1 && !do_wolfe) {
