@@ -195,6 +195,17 @@ void test_integrator() {
 	        error_nuclear += abs(Integrator.integral_nuclear(0, 0, 0)*0.5*pow(alpha1, 5)-1.0) ;
         	error_nuclear += abs(Integrator.integral_nuclear(0, 1, 0)*pow(alpha1, 6)*(4.0/15.0)-1.0) ;
 	        error_nuclear += abs(Integrator.integral_nuclear(0, 2, 0)*pow(alpha1, 7)/9.0-1.0) ;
+		error_nuclear += abs(Integrator.integral_nuclear(0, 0, 5)) ;
+		error_nuclear += abs(Integrator.integral_nuclear(2, 3, 6)*(16.0/30405375.0)*pow(alpha1, 16)-1.0) ;
+		error_nuclear += abs(Integrator.integral_nuclear(3, 6, 3)) ;
+		error_nuclear += abs(Integrator.integral_nuclear(6, 5, 4)*(8.0/123743795175.0)*pow(alpha1, 20)-1.0) ;
+		error_nuclear += abs(Integrator.integral_nuclear(5, 3, 5)) ;
+		error_nuclear += abs(Integrator.integral_nuclear(6, 3, 2)*(32.0/212837625.0)*pow(alpha1, 16)-1.0) ;
+		error_nuclear += abs(Integrator.integral_nuclear(3, 3, 5)) ;
+		error_nuclear += abs(Integrator.integral_nuclear(3, 0, 1)) ;
+		error_nuclear += abs(Integrator.integral_nuclear(4, 4, 3)) ;
+		error_nuclear += abs(Integrator.integral_nuclear(3, 3, 6)*(2.0/30405375.0)*pow(alpha1, 17)-1.0) ;
+		error_nuclear += abs(Integrator.integral_nuclear(4, 1, 6)*(8.0/18243225.0)*pow(alpha1, 16)-1.0) ;
 
 	        error_repulsion += abs(Integrator.integral_repulsion(0, 0, 0)*1.6*pow(alpha1, 5)-1.0) ;
         	error_repulsion += abs(Integrator.integral_repulsion(0, 1, 0)*pow(alpha1, 6)-1.0) ;
