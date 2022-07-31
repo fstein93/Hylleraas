@@ -227,7 +227,7 @@ void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coeffi
 	energy = evals[0] ;
 }
 
-void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, vector<double>& coefficients, double& energy, double& nabla_energy) {
+void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, vector<double>& coefficients, double& energy, double& denergy_dalpha) {
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
 	const size_t dim2 = dim*dim ;
         
@@ -242,9 +242,8 @@ void calc_energy(const double alpha, const size_t n, const size_t m, const size_
 	calc_first_eig(H, S, coefficients, energy) ;
 
 	matrix_vector_prod(0.0, h_coeff, 1.0, dH_dalpha, coefficients) ;
-	nabla_energy = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
-	matrix_vector_prod(0.0, h_coeff, -energy, dS_dalpha, coefficients) ;
-	nabla_energy -= energy*inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
+	matrix_vector_prod(1.0, h_coeff, -energy, dS_dalpha, coefficients) ;
+	denergy_dalpha = inner_product(coefficients.begin(), coefficients.end(), h_coeff.begin(), 0.0) ;
 }
 
 int main(){
@@ -273,9 +272,8 @@ int main(){
 	const double eps_gradient = 1.0e-5 ;
 
 	double denergy_dalpha_old, alpha_old ;
-
-	double t_H = 0.0 ;
-	double t_S = 0.0 ;
+	double energy = 0.0 ;
+	double denergy_dalpha = 0.0 ;
 
 	// Parameters of Wolfe condition
 	const bool do_wolfe = true ;
@@ -289,28 +287,8 @@ int main(){
 
                 double tstart = double(clock()) ;
 
-	        const integrator Integrator(alpha, n, m, k);
-
-        	// Calculate arrays
-	        double tstart2, tend2 ;
-        	tstart2 = double(clock()) ;
-	        calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
-        	tend2 = double(clock()) ;
-		t_H += (tend2-tstart2)/CLOCKS_PER_SEC ;
-        	tstart2 = double(clock()) ;
-	        calc_S(S, dS_dalpha, Integrator, n, m, k) ;
-        	tend2 = double(clock()) ;
-		t_S += (tend2-tstart2)/CLOCKS_PER_SEC ;
-
-                // Calculate energy and coefficients
-		double energy ;
-	        calc_first_eig(H, S, coefficients, energy) ;
-
-		vector<double> work_vector(dim) ;
-		matrix_vector_prod(0.0, work_vector, 1.0, dH_dalpha, coefficients);
-		matrix_vector_prod(1.0, work_vector, -energy, dS_dalpha, coefficients);
-	
-		const double denergy_dalpha = inner_product(coefficients.begin(), coefficients.end(), work_vector.begin(), 0.0) ;
+		// Solve the Schrödinger equation for the given value of alpha
+		calc_energy(alpha, n, m, k, Z, coefficients, energy, denergy_dalpha) ;
 
 		// Determine Gamma
 		if (iter > 1 && !do_wolfe) {
@@ -343,7 +321,7 @@ int main(){
 
 		double tend = double(clock()) ;
 
-                printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, abs(denergy_dalpha), energy) ;
+                printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, denergy_dalpha, energy) ;
 
 		if (abs(denergy_dalpha) < eps_gradient) converged = true ;
 
@@ -351,8 +329,5 @@ int main(){
 
 	}
 
-        printf("Time calc_H : %f\n", t_H) ;
-        printf("Time calc_S : %f\n", t_S) ;
-	
 	return 0;
 }
