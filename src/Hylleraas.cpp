@@ -290,6 +290,8 @@ void calc_energy(const double alpha, const size_t n, const size_t m, const size_
 	vector<double> H(dim2), dH_dalpha(dim2), h_coeff(dim), S(dim2), dS_dalpha(dim2) ;
 	calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
         calc_S(S, dS_dalpha, Integrator, n, m, k) ;
+printf("\nH ") ;
+print_vector(H) ;
 
 	// Determine the coefficients and the energy
 	calc_first_eig(H, S, coefficients, energy) ;
@@ -349,6 +351,7 @@ int main(){
 
 		// Solve the Schrödinger equation for the given value of alpha
 		calc_energy(alpha, n, m, k, Z, coefficients, energy, denergy_dalpha) ;
+		print_vector(coefficients) ;
 
 		// Determine Gamma
 		if (iter > 1 && !do_wolfe) {
