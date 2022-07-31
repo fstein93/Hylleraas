@@ -261,7 +261,7 @@ int main(){
 	const size_t m = input_ui() ;
 	const size_t k = input_ui() ;
 
-	const double gamma0 = 0.5 ;
+	const double max_step_size = 0.5 ;
 	
 	// Create working arrays
 	const size_t dim = (n+1)*(m+1)*(k+1) ;
@@ -274,7 +274,7 @@ int main(){
 
 	size_t num_iter = 10 ;
 	double alpha = alpha0 ;
-	double gamma = gamma0 ;
+	double step_size = max_step_size ;
 	bool converged = false ;
 	const double eps_gradient = 1.0e-5 ;
 
@@ -286,7 +286,6 @@ int main(){
 	// Parameters of Wolfe condition
 	const double c1 = 0.0001 ;
 	const double c2 = 0.9 ;
-	const double rho0 = 0.1 ;
 
 	if (do_wolfe) {
 		printf("Do Wolfe update: true") ;
@@ -294,7 +293,7 @@ int main(){
 		printf("Do Wolfe update: false") ;
 	}
 
-	printf("iter time gamma alpha norm grad energy\n") ;
+	printf("iter time step_size alpha norm grad energy\n") ;
 
 	for (size_t iter = 1 ; iter <= num_iter ; iter++) {
 
@@ -305,36 +304,33 @@ int main(){
 
 		// Determine Gamma
 		if (iter > 1 && !do_wolfe) {
-			denergy_dalpha_old = denergy_dalpha-denergy_dalpha_old ;
-			const double inv_norm = 1.0/abs(denergy_dalpha_old) ;
-			alpha_old = alpha-alpha_old ;
-			gamma = inv_norm*alpha_old ;
+			step_size = abs((alpha-alpha_old)/(denergy_dalpha-denergy_dalpha_old)) ;
 		} else {
 			vector<double> coefficients2(dim) ;
 			double denergy_dalpha2, energy2 ;
-			gamma = -1.0 ;
+			step_size = -1.0 ;
 			do {
-				if (gamma < 0.0) {
-					gamma = rho0 ;
+				if (step_size < 0.0) {
+					step_size = max_step_size ;
 				} else {
-					gamma /= 2.0 ;
+					step_size /= 2.0 ;
 				}
-				if (gamma == 0.0) {
+				if (step_size == 0.0) {
 					converged = true ;
 					break ;
 				}
-				calc_energy(alpha-gamma*denergy_dalpha, n, m, k, Z, coefficients2, energy2, denergy_dalpha2) ;
+				calc_energy(alpha-step_size*denergy_dalpha, n, m, k, Z, coefficients2, energy2, denergy_dalpha2) ;
 			}
-			while (energy2 >= energy-c1*gamma*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha) ;
+			while (energy2 >= energy-c1*step_size*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha) ;
 		}
 
 		denergy_dalpha_old = denergy_dalpha ;
 		alpha_old = alpha ;
-		alpha -= gamma*denergy_dalpha ;
+		alpha -= step_size*denergy_dalpha ;
 
 		double tend = double(clock()) ;
 
-                printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, gamma, alpha, denergy_dalpha, energy) ;
+                printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, step_size, alpha, denergy_dalpha, energy) ;
 
 		if (abs(denergy_dalpha) < eps_gradient) converged = true ;
 
