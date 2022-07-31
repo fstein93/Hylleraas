@@ -185,6 +185,12 @@ void test_integrator() {
 		error_kinetic += abs(Integrator.integral_kinetic(3, 3, 3, 3, 3, 3)/5296906345500.0*pow(alpha1, 22)-1.0) ;
 		error_kinetic += abs(Integrator.integral_kinetic(1, 2, 3, 3, 2, 1)/11240775.0*pow(alpha1, 16)-1.0) ;
 		error_kinetic += abs(Integrator.integral_kinetic(2, 1, 3, 0, 2, 1)*(32.0/1107513.0)*pow(alpha1, 13)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(1, 1, 0, 3, 0, 1)*(4.0/2205.0)*pow(alpha1, 10)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(3, 1, 3, 0, 2, 1)*(64.0/14142843.0)*pow(alpha1, 14)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(1, 3, 0, 2, 1, 0)/3495.0*pow(alpha1, 11)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(2, 2, 3, 0, 3, 1)*(16.0/23501907.0)*pow(alpha1, 15)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(0, 3, 2, 3, 0, 3)*(64.0/86837751.0)*pow(alpha1, 15)-1.0) ;
+		error_kinetic += abs(Integrator.integral_kinetic(2, 1, 2, 3, 2, 3)*(16.0/1261214955.0)*pow(alpha1, 17)-1.0) ;
 
 	        error_nuclear += abs(Integrator.integral_nuclear(0, 0, 0)*0.5*pow(alpha1, 5)-1.0) ;
         	error_nuclear += abs(Integrator.integral_nuclear(0, 1, 0)*pow(alpha1, 6)*(4.0/15.0)-1.0) ;
