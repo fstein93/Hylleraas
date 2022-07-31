@@ -38,7 +38,7 @@ class integrator {
 		}
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
-                        return (k%2 == 0 ? 4.0*((double) (k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0.0);
+                        return (k%2 == 0 ? 4.0*((double) (2*k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0.0);
 		}
 
 		double fac_dalpha_overlap(const size_t n, const size_t m, const size_t k) const {

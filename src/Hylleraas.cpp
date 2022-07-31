@@ -214,6 +214,16 @@ void test_integrator() {
 	        error_overlap += abs(Integrator.integral_overlap(0, 0, 0)*pow(alpha1, 6)-1.0) ;
         	error_overlap += abs(Integrator.integral_overlap(0, 1, 0)*pow(alpha1, 7)*(16.0/35.0)-1.0) ;
 	        error_overlap += abs(Integrator.integral_overlap(0, 2, 0)*pow(alpha1, 8)/6.0-1.0) ;
+		error_overlap += abs(Integrator.integral_overlap(2, 2, 4)/7020.0*pow(alpha1, 14)-1.0) ;
+		error_overlap += abs(Integrator.integral_overlap(5, 5, 2)*(16.0/723647925.0)*pow(alpha1, 18)-1.0) ;
+		error_overlap += abs(Integrator.integral_overlap(5, 5, 1)) ;
+		error_overlap += abs(Integrator.integral_overlap(3, 0, 5)) ;
+		error_overlap += abs(Integrator.integral_overlap(6, 2, 5)) ;
+		error_overlap += abs(Integrator.integral_overlap(1, 2, 0)/24.0*pow(alpha1, 9)-1.0) ;
+		error_overlap += abs(Integrator.integral_overlap(2, 6, 3)) ;
+		error_overlap += abs(Integrator.integral_overlap(0, 4, 3)) ;
+		error_overlap += abs(Integrator.integral_overlap(5, 0, 1)) ;
+		error_overlap += abs(Integrator.integral_overlap(1, 3, 2)*(64.0/27027.0)*pow(alpha1, 12)-1.0) ;
 
 	}
 
@@ -316,12 +326,12 @@ int main(){
 	const double c2 = 0.9 ;
 
 	if (do_wolfe) {
-		printf("Do Wolfe update: true/n") ;
+		printf("Do Wolfe update: true\n") ;
 	} else {
-		printf("Do Wolfe update: false/n") ;
+		printf("Do Wolfe update: false\n") ;
 	}
 
-	printf("iter time step_size alpha norm grad energy\n") ;
+	printf("\niter time step_size alpha norm grad energy\n") ;
 
 	for (size_t iter = 1 ; iter <= num_iter ; iter++) {
 
