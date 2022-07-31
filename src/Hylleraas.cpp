@@ -19,16 +19,22 @@ extern double dlamch_(char*) ;
 extern int ilaenv_(int*, char*, char*, int*, int*, int*, int*) ;
 }
 
-double input_d(){
+double input_d() {
 	double d ;
 	cin >> d ;
 	return d;
 }
 
-unsigned int input_ui(){
+unsigned int input_ui() {
 	unsigned int ui ;
 	cin >> ui ;
 	return ui;
+}
+
+bool input_b() {
+	bool b ;
+	cin >> b ;
+	return b ;
 }
 
 void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const integrator & Integrator, const size_t n, const size_t m, const size_t k){
@@ -249,6 +255,7 @@ void calc_energy(const double alpha, const size_t n, const size_t m, const size_
 int main(){
 	// Get required parameters from user
 	const double alpha0 = input_d() ;
+	const bool do_wolfe = input_b() ;
 	const size_t Z = input_ui() ;
 	const size_t n = input_ui() ;
 	const size_t m = input_ui() ;
@@ -271,15 +278,21 @@ int main(){
 	bool converged = false ;
 	const double eps_gradient = 1.0e-5 ;
 
-	double denergy_dalpha_old, alpha_old ;
+	double denergy_dalpha_old = 0.0 ;
+	double alpha_old = alpha ;
 	double energy = 0.0 ;
 	double denergy_dalpha = 0.0 ;
 
 	// Parameters of Wolfe condition
-	const bool do_wolfe = true ;
 	const double c1 = 0.0001 ;
 	const double c2 = 0.9 ;
 	const double rho0 = 0.1 ;
+
+	if (do_wolfe) {
+		printf("Do Wolfe update: true") ;
+	} else {
+		printf("Do Wolfe update: false") ;
+	}
 
 	printf("iter time gamma alpha norm grad energy\n") ;
 
