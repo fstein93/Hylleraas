@@ -272,12 +272,13 @@ int main(){
 
 	vector<double> coefficients(dim) ;
 
-	size_t num_iter = 10 ;
+	size_t num_iter = 20 ;
 	double alpha = alpha0 ;
 	double step_size = max_step_size ;
 	bool converged = false ;
 	const double eps_gradient = 1.0e-5 ;
 
+	// Set parameters here to make the compiler happy
 	double denergy_dalpha_old = 0.0 ;
 	double alpha_old = alpha ;
 	double energy = 0.0 ;
@@ -288,9 +289,9 @@ int main(){
 	const double c2 = 0.9 ;
 
 	if (do_wolfe) {
-		printf("Do Wolfe update: true") ;
+		printf("Do Wolfe update: true/n") ;
 	} else {
-		printf("Do Wolfe update: false") ;
+		printf("Do Wolfe update: false/n") ;
 	}
 
 	printf("iter time step_size alpha norm grad energy\n") ;
@@ -305,6 +306,8 @@ int main(){
 		// Determine Gamma
 		if (iter > 1 && !do_wolfe) {
 			step_size = abs((alpha-alpha_old)/(denergy_dalpha-denergy_dalpha_old)) ;
+			denergy_dalpha_old = denergy_dalpha ;
+			alpha_old = alpha ;
 		} else {
 			vector<double> coefficients2(dim) ;
 			double denergy_dalpha2, energy2 ;
@@ -324,12 +327,12 @@ int main(){
 			while (energy2 >= energy-c1*step_size*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha) ;
 		}
 
-		denergy_dalpha_old = denergy_dalpha ;
-		alpha_old = alpha ;
+		// Update alpha
 		alpha -= step_size*denergy_dalpha ;
 
 		double tend = double(clock()) ;
 
+		// Print statistics
                 printf("%lu %f %f %f %f %f\n", iter, (tend-tstart)/CLOCKS_PER_SEC, step_size, alpha, denergy_dalpha, energy) ;
 
 		if (abs(denergy_dalpha) < eps_gradient) converged = true ;
