@@ -365,9 +365,14 @@ void calc_energy(const double alpha, const size_t n, const size_t m, const size_
 }
 
 int main(){
+	// Available minimizers (to be converted to enum later)
+	constexpr size_t do_wolfe = 1 ;
+	constexpr size_t do_poly2 = 2 ;
+	constexpr size_t do_barzilai_borwein = 3 ;
+
 	// Get required parameters from user
 	const double alpha0 = input_d() ;
-	const bool do_wolfe = input_b() ;
+	const size_t minimizer = input_ui() ;
 	const size_t Z = input_ui() ;
 	const size_t n = input_ui() ;
 	const size_t m = input_ui() ;
@@ -384,7 +389,7 @@ int main(){
 
 	vector<double> coefficients(dim) ;
 
-	size_t num_iter = 10 ;
+	size_t num_iter = 20 ;
 	double alpha = alpha0 ;
 	double step_size = max_step_size ;
 	double min_step_size = 1.0e-5 ;
@@ -418,7 +423,11 @@ int main(){
 		calc_energy(alpha, n, m, k, Z, coefficients, energy, denergy_dalpha, d2energy_dalpha2) ;
 
 		// Determine Gamma
-		if (iter > 1 && !do_wolfe) {
+		if (minimizer==do_poly2) {
+			// Determine minimum of 2nd order Taylor polynomial
+			step_size = 1.0/d2energy_dalpha2 ;
+		} else if (iter > 1 && minimizer==do_barzilai_borwein) {
+			// Here, it reduces to a 1st order forward estimate of the second derivative
 			step_size = abs((alpha-alpha_old)/(denergy_dalpha-denergy_dalpha_old)) ;
 			denergy_dalpha_old = denergy_dalpha ;
 			alpha_old = alpha ;
@@ -442,7 +451,7 @@ int main(){
 		}
 
 		// Enforce a certain step size
-		step_size = max(step_size, min_step_size) ;
+		if (minimizer!=do_poly2) { step_size = max(step_size, min_step_size) ; }
 
 		// Update alpha
 		alpha -= step_size*denergy_dalpha ;
