@@ -24,18 +24,27 @@ class integrator {
 		double fac_dintegral_st(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (k+m+n+5))/alpha ;
 		}
+                double fac_d2integral_st(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+6))/alpha ;
+                }
 		double integral_ut(const size_t n, const size_t m, const size_t k) const {
 			return (k%2==0 ? 4.0/(((double) (k+1))*((double) (k+3))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0) ;
 		}
 		double fac_dintegral_ut(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (k+m+n+5))/alpha ;
 		}
+                double fac_d2integral_ut(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+6))/alpha ;
+                }
 		double integral_su(const size_t n, const size_t m, const size_t k) const {
 			return (k%2==0 ? -4.0/(((double) (k+1))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0) ;
 		}
 		double fac_dintegral_su(const size_t n, const size_t m, const size_t k) const {
 			return -((double) (k+m+n+5))/alpha ;
 		}
+                double fac_d2integral_su(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+6))/alpha ;
+                }
 
 		double integral_overlap(const size_t n, const size_t m, const size_t k) const {
                         return (k%2 == 0 ? 4.0*((double) (2*k+m+6))/(((double) (k+1))*((double) (k+3))*((double) (k+m+3))*((double) (k+m+5)))*exp_integral(k+m+n+5) : 0.0);
@@ -45,6 +54,10 @@ class integrator {
                         return -((double) (k+m+n+6))/alpha ;
 		}
 
+                double fac_d2alpha_overlap(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+7))/alpha ;
+                }
+
 		double integral_nuclear(const size_t n, const size_t m, const size_t k) const {
                         return (k%2 == 0 ? 8.0/(((double) (k+1))*((double) (k+m+3)))*exp_integral(k+m+n+4) : 0.0);
 		}
@@ -52,6 +65,10 @@ class integrator {
 		double fac_dalpha_nuclear(const size_t n, const size_t m, const size_t k) const {
                         return -((double) (k+m+n+5))/alpha ;
 		}
+
+                double fac_d2alpha_nuclear(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+6))/alpha ;
+                }
 
 		double integral_kinetic(const size_t n1, const size_t m1, const size_t k1, const size_t n2, const size_t m2, const size_t k2) const {
 		        return ((k1+k2)%2 == 0 ? alpha*alpha*integral_st(n1+n2, m1+m2+1, k1+k2) // d2/ds2 (1)
@@ -71,6 +88,10 @@ class integrator {
                         return -((double) (k+m+n+4))/alpha ;
 		}
 
+                double fac_d2alpha_kinetic(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+5))/alpha ;
+                }
+
 		double integral_repulsion(const size_t n, const size_t m, const size_t k) const {
                         return (k%2==0 ? 4.0*((double) (2*k+m+5))/(((double) (k+1))*((double) (k+3))*((double) (k+m+2))*((double) (k+m+4)))*exp_integral(k+m+n+4) : 0.0);
 		}
@@ -78,6 +99,10 @@ class integrator {
 		double fac_dalpha_repulsion(const size_t n, const size_t m, const size_t k) const {
                         return -((double) (k+m+n+5))/alpha ;
 		}
+
+                double fac_d2alpha_repulsion(const size_t n, const size_t m, const size_t k) const {
+                        return -((double) (k+m+n+6))/alpha ;
+                }
 	private:
 		double* basic_integrals = NULL ;
 		size_t size_basic_integrals = 0 ;
