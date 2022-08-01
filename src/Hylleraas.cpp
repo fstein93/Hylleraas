@@ -330,7 +330,7 @@ int main(){
 	// Create working arrays
 	const size_t dim = (n+1)*(m+1)*(k/2+1) ;
 	const size_t dim2 = dim*dim ;
-	vector<double> H(dim2), S(dim2), dH_dalpha(dim2), dS_dalpha(dim2) ;
+	vector<double> H(dim2), S(dim2) ;
 
 	test_integrator();
 
@@ -389,7 +389,7 @@ int main(){
 				}
 				calc_energy(alpha-step_size*denergy_dalpha, n, m, k, Z, coefficients2, energy2, denergy_dalpha2) ;
 			}
-			while (energy2 >= energy-c1*step_size*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha) ;
+			while (energy2 >= energy-c1*step_size*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha && step_size >= min_step_size) ;
 		}
 
 		// Enforce a certain step size
