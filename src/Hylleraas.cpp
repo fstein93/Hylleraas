@@ -42,10 +42,10 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	size_t idx = 0 ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
-			for (size_t k1 = 0 ; k1 <= k ; k1++) {
+			for (size_t k1 = 0 ; k1 <= k ; k1+=2) {
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2+=2) {
 							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
 								const double element = Integrator.integral_kinetic(n1, m1, k1, n2, m2, k2) ;
 								H[idx] = element ;
@@ -63,10 +63,10 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
         const double Z_double = (double) Z ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
-			for (size_t k1 = 0 ; k1 <= k ; k1++) {
+			for (size_t k1 = 0 ; k1 <= k ; k1+=2) {
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2+=2) {
 							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
 								const double element = -Z_double*Integrator.integral_nuclear(n1+n2, m1+m2, k1+k2) ;
 								H[idx] += element ;
@@ -83,10 +83,10 @@ void calc_H(vector<double>& H, vector<double>& dH_dalpha, const size_t Z, const 
 	idx = 0 ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
-			for (size_t k1 = 0 ; k1 <= k ; k1++) {
+			for (size_t k1 = 0 ; k1 <= k ; k1+=2) {
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2+=2) {
 							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
 								const double element = Integrator.integral_repulsion(n1+n2, m1+m2, k1+k2) ;
 								H[idx] += element ;
@@ -105,10 +105,10 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, const integrator & Int
 	size_t idx = 0 ;
 	for (size_t n1 = 0 ; n1 <= n ; n1++) {
 		for (size_t m1 = 0 ; m1 <= m ; m1++){
-			for (size_t k1 = 0 ; k1 <= k ; k1++) {
+			for (size_t k1 = 0 ; k1 <= k ; k1+=2) {
 				for (size_t n2 = 0 ; n2 <= n ; n2++) {
 					for (size_t m2 = 0 ; m2 <= m ; m2++) {
-						for (size_t k2 = 0 ; k2 <= k ; k2++) {
+						for (size_t k2 = 0 ; k2 <= k ; k2+=2) {
 							if (n1 < n2 || ((n1 == n2) && (m1 < m2 || (m1 == m2 && k1 <= k2)))) {
 								const double element = Integrator.integral_overlap(n1+n2, m1+m2, k1+k2) ;
 								S[idx] = element ;
@@ -282,7 +282,7 @@ void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coeffi
 }
 
 void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, vector<double>& coefficients, double& energy, double& denergy_dalpha) {
-	const size_t dim = (n+1)*(m+1)*(k+1) ;
+	const size_t dim = (n+1)*(m+1)*(k/2+1) ;
 	const size_t dim2 = dim*dim ;
         
 	const integrator Integrator(alpha, n, m, k);
@@ -312,7 +312,7 @@ int main(){
 	const double max_step_size = 1.0 ;
 	
 	// Create working arrays
-	const size_t dim = (n+1)*(m+1)*(k+1) ;
+	const size_t dim = (n+1)*(m+1)*(k/2+1) ;
 	const size_t dim2 = dim*dim ;
 	vector<double> H(dim2), S(dim2), dH_dalpha(dim2), dS_dalpha(dim2) ;
 
