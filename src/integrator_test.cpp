@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "integrator.h"
+#include "integrator_test.h"
 
 using namespace std ;
 
