@@ -323,6 +323,7 @@ int main(){
 	size_t num_iter = 20 ;
 	double alpha = alpha0 ;
 	double step_size = max_step_size ;
+	double min_step_size = 1.0e-5 ;
 	bool converged = false ;
 	const double eps_gradient = 1.0e-5 ;
 
@@ -374,6 +375,9 @@ int main(){
 			}
 			while (energy2 >= energy-c1*step_size*denergy_dalpha*denergy_dalpha && denergy_dalpha2 >= c2*denergy_dalpha) ;
 		}
+
+		// Enforce a certain step size
+		step_size = max(step_size, min_step_size) ;
 
 		// Update alpha
 		alpha -= step_size*denergy_dalpha ;
