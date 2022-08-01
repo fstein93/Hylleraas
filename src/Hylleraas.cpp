@@ -372,7 +372,7 @@ int main(){
 
 	// Get required parameters from user
 	const double alpha0 = input_d() ;
-	const size_t minimizer = input_ui() ;
+	size_t minimizer = input_ui() ;
 	const size_t Z = input_ui() ;
 	const size_t n = input_ui() ;
 	const size_t m = input_ui() ;
@@ -407,10 +407,15 @@ int main(){
 	const double c1 = 0.0001 ;
 	const double c2 = 0.9 ;
 
-	if (do_wolfe) {
-		printf("Do Wolfe update: true\n") ;
+	if (minimizer==do_wolfe) {
+		printf("Do Wolfe update\n") ;
+	} else if (minimizer==do_poly2) {
+		printf("Do Taylor update\n") ;
+	} else if (minimizer==do_barzilai_borwein) {
+		printf("Do Barzilai-Borwein update\n") ;
 	} else {
-		printf("Do Wolfe update: false\n") ;
+		printf("Unknown minimizer! Switch to Wolfe update!") ;
+		minimizer = do_wolfe ;
 	}
 
 	printf("\niter time step_size alpha norm grad energy\n") ;
