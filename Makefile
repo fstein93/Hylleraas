@@ -25,6 +25,9 @@ HEADERS := $(shell find $(SRC_DIR) -name '*.h')
 # As an example, hello.cpp turns into ./build/hello.cpp.o
 OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
+# Dependency files
+DEPENDENCIES := $(OBJS:.o=.d)
+
 # Every folder in ./src will need to be passed to GCC so that it can find header files
 INC_DIRS := $(LIBS) $(INCFLAGS)
 INC_FLAGS := $(INC_DIRS)
@@ -44,6 +47,8 @@ $(EXE): $(OBJS)
 $(OBJS): $(SRCS) $(HEADERS)
 	mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+-include $(DEPENDENCIES)
 
 .PHONY: clean
 clean:
