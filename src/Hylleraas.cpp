@@ -278,7 +278,16 @@ void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coeffi
 	vector<int> iwork(2*((size_t) dim)), ifail((size_t) dim) ;
 	vector<double> work((size_t) lwork), evals((size_t) dim) ;
 	dsygvx_(&itype, &jobz, &range, &uplo, &dim, &H[0], &dim, &S[0], &dim, &vl, &vu, &il, &iu, &abstol, &found_evals, &evals[0], &coefficients[0], &dim, &work[0], &lwork, &iwork[0], &ifail[0], &info) ;
-	energy = evals[0] ;
+	if (info == 0) {
+		energy = evals[0] ;
+	} else {
+		printf("DSYGVX failed\n") ;
+		energy = H[0]/S[0] ;
+		coefficients[0] = 1.0/S[0] ;
+		for (size_t i = 1 ; i < (size_t) dim ; i++) {
+			coefficients[i] = 0.0 ;
+		}
+	}
 }
 
 void calc_energy(const double alpha, const size_t n, const size_t m, const size_t k, const size_t Z, vector<double>& coefficients, double& energy, double& denergy_dalpha) {
