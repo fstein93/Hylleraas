@@ -131,12 +131,12 @@ void calc_S(vector<double>& S, vector<double>& dS_dalpha, vector<double>& d2S_da
 }
 
 void matrix_vector_prod(const double alpha, vector<double> & y, const double beta, vector<double> const & A, vector<double> const & x) {
-  cblas_dsymv(CblasRowMajor, CblasUpper, (blasint) (y.size()), beta, &A[0], (blasint) (x.size()), &x[0], 1, alpha, &y[0], 1);
+  cblas_dsymv(CblasRowMajor, CblasUpper, static_cast<blasint>(y.size()), beta, &A[0], static_cast<blasint>(x.size()), &x[0], 1, alpha, &y[0], 1);
 }
 
 void vector_add(const double alpha, vector<double> & y, const double beta, const vector<double> & x) {
-  cblas_dscal((blasint) (y.size()), alpha, &y[0], 1);
-  cblas_daxpy((blasint) (y.size()), beta, &x[0], 1, &y[0], 1);
+  cblas_dscal(static_cast<blasint>(y.size()), alpha, &y[0], 1);
+  cblas_daxpy(static_cast<blasint>(y.size()), beta, &x[0], 1, &y[0], 1);
 }
 
 void print_vector(const vector<double>& a) {
@@ -280,18 +280,19 @@ void calc_first_eig(vector<double>& H, vector<double>& S, vector<double>& coeffi
 	int iu = 1 ;
 	double abstol = 2.0*dlamch_(&cmach) ;
 	int found_evals, info ;
-	int dim = (int) coefficients.size() ;
-	int lwork = max(ilaenv_(&ispec, &name[0], &opts[0], &n1, &n2, &n3, &n4)+3, 8)*dim ;
-	vector<int> iwork(2*((size_t) dim)), ifail((size_t) dim) ;
-	vector<double> work((size_t) lwork), evals((size_t) dim) ;
-	dsygvx_(&itype, &jobz, &range, &uplo, &dim, &H[0], &dim, &S[0], &dim, &vl, &vu, &il, &iu, &abstol, &found_evals, &evals[0], &coefficients[0], &dim, &work[0], &lwork, &iwork[0], &ifail[0], &info) ;
+	size_t dim = coefficients.size() ;
+	int dim_int = static_cast<int>(dim) ;
+	int lwork = max(ilaenv_(&ispec, &name[0], &opts[0], &n1, &n2, &n3, &n4)+3, 8)*dim_int ;
+	vector<int> iwork(2*dim), ifail(dim) ;
+	vector<double> work(static_cast<size_t>(lwork)), evals(dim) ;
+	dsygvx_(&itype, &jobz, &range, &uplo, &dim_int, &H[0], &dim_int, &S[0], &dim_int, &vl, &vu, &il, &iu, &abstol, &found_evals, &evals[0], &coefficients[0], &dim_int, &work[0], &lwork, &iwork[0], &ifail[0], &info) ;
 	if (info == 0) {
 		energy = evals[0] ;
 	} else {
 		printf("DSYGVX failed\n") ;
 		energy = H[0]/S[0] ;
 		coefficients[0] = pow(S[0], 0.5) ;
-		for (size_t i = 1 ; i < (size_t) dim ; i++) {
+		for (size_t i = 1 ; i < dim ; i++) {
 			coefficients[i] = 0.0 ;
 		}
 	}
