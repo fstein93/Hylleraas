@@ -325,7 +325,7 @@ int main(){
 	const size_t m = input_ui() ;
 	const size_t k = input_ui() ;
 
-	const double max_step_size = 1.0 ;
+	const double max_step_size = 0.1 ;
 	
 	// Create working arrays
 	const size_t dim = (n+1)*(m+1)*(k/2+1) ;
