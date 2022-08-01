@@ -301,6 +301,13 @@ void calc_energy(const double alpha, const size_t n, const size_t m, const size_
 	calc_H(H, dH_dalpha, Z, Integrator, n, m, k) ;
         calc_S(S, dS_dalpha, Integrator, n, m, k) ;
 
+	if (true) {
+		printf("\nH ") ;
+		print_vector(H) ;
+		printf("S ") ;
+		print_vector(S) ;
+	}
+
 	// Determine the coefficients and the energy
 	calc_first_eig(H, S, coefficients, energy) ;
 
